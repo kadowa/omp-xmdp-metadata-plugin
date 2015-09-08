@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filterConfig SYSTEM "../../../../lib/pkp/dtd/filterConfig.dtd">
+
+<!--
+  * filterConfig.xml
+  *
+  * Copyright (c) 2014-2015 Simon Fraser University Library
+  * Copyright (c) 2003-2015 John Willinsky
+  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
+  *
+  * Filter Configuration.
+  -->
+<filterConfig>
+	<filterGroups>
+		<!-- XMetaDissPlus 2.2 publication format adapters -->
+		<filterGroup
+			symbolic="publicationFormat=>xmdp22"
+			displayName="plugins.metadata.xmdp22.publicationFormatAdapter.displayName"
+			description="plugins.metadata.xmdp22.publicationFormatAdapter.description"
+			inputType="class::classes.publicationFormat.PublicationFormat"
+			outputType="metadata::plugins.metadata.xmdp22.schema.Xmdp22Schema(PUBLICATION_FORMAT)" />
+	</filterGroups>
+	<filters>
+		<!-- XMetaDissPlus 2.2 publication format adapters -->
+		<filter
+			inGroup="publicationFormat=>xmdp22"
+			class="plugins.metadata.xmdp22.filter.Xmdp22SchemaPublicationFormatAdapter"
+			isTemplate="0" />
+	</filters>
+</filterConfig>
