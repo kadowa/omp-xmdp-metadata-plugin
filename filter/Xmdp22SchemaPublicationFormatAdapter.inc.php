@@ -1,18 +1,17 @@
 <?php
 
 /**
- * @file plugins/metadata/dc11/filter/Dc11SchemaPublicationFormatAdapter.inc.php
+ * @file plugins/metadata/dc11/filter/Xmdp22SchemaPublicationFormatAdapter.inc.php
  *
  * Copyright (c) 2014-2015 Simon Fraser University Library
  * Copyright (c) 2000-2015 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
- * @class Dc11SchemaPublicationFormatAdapter
- * @ingroup plugins_metadata_dc11_filter
+ * @class Xmdp22SchemaPublicationFormatAdapter
+ * @ingroup plugins_metadata_xmdp22_filter
  * @see PublicationFormat
- * @see PKPDc11Schema
  *
- * @brief Adapter that injects/extracts Dublin Core schema compliant meta-data
+ * @brief Adapter that injects/extracts XMetaDissPlus schema compliant meta-data
  * into/from a PublicationFormat object.
  */
 
@@ -65,26 +64,18 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		AppLocale::requireComponents(LOCALE_COMPONENT_APP_COMMON);
 
 		// Retrieve data that belongs to the publication format.
-		// FIXME: Retrieve this data from the respective entity DAOs rather than
-		// from the OAIDAO once we've migrated all OAI providers to the
-		// meta-data framework. We're using the OAIDAO here because it
-		// contains cached entities and avoids extra database access if this
-		// adapter is called from an OAI context.
 		$oaiDao = DAORegistry::getDAO('OAIDAO'); /* @var $oaiDao OAIDAO */
 		$publishedMonographDao = DAORegistry::getDAO('PublishedMonographDAO');
 		$monograph = $publishedMonographDao->getById($publicationFormat->getMonographId());
 		$press = $oaiDao->getPress($monograph->getPressId());
-		$dc11Description = $this->instantiateMetadataDescription();
+		$description = $this->instantiateMetadataDescription();
 
 		// Title
-		$this->_addLocalizedElements($dc11Description, 'dc:title', $monograph->getTitle(null));
-		
-#		$dc11Description->addStatement('dc:myproperty', "Hi there!");
-#		$dc11Description->addStatement('dc:coverage', "Anyone home?");
+		$this->_addLocalizedElements($description, 'dc:title', $monograph->getTitle(null));
 
-		Hookregistry::call('Xmdp22SchemaPublicationFormatAdapter::extractMetadataFromDataObject', array(&$this, $monograph, $press, &$dc11Description));
+		Hookregistry::call('Xmdp22SchemaPublicationFormatAdapter::extractMetadataFromDataObject', array(&$this, $monograph, $press, &$description));
 
-		return $dc11Description;
+		return $description;
 	}
 
 	/**
@@ -92,7 +83,6 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 	 * @param $translated boolean
 	 */
 	function getDataObjectMetadataFieldNames($translated = true) {
-		// All DC fields are mapped.
 		return array();
 	}
 
