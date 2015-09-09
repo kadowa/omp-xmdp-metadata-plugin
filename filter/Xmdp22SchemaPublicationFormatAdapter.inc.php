@@ -66,9 +66,12 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		// Retrieve data that belongs to the publication format.
 		$oaiDao = DAORegistry::getDAO('OAIDAO'); /* @var $oaiDao OAIDAO */
 		$publishedMonographDao = DAORegistry::getDAO('PublishedMonographDAO');
+		$chapterDao = DAORegistry::getDAO('ChapterDAO');
 		$monograph = $publishedMonographDao->getById($publicationFormat->getMonographId());
+		$chapters = $chapterDao->getChapters($monograph->getId());
 		$series = $oaiDao->getSeries($monograph->getSeriesId()); /* @var $series Series */
 		$press = $oaiDao->getPress($monograph->getPressId());
+		
 		$description = $this->instantiateMetadataDescription();
 
 		// Title
@@ -93,6 +96,11 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 				(array) $monograph->getSubjectClass(null));
 		$this->_addLocalizedElements($description, 'dc:subject', $subjects);
 		
+		// Table of Contents
+		
+		// Abstract
+		$this->_addLocalizedElements($description, 'dcterms:abstract', $monograph->getAbstract(null));
+		
 		// Publisher
 		$publisherInstitution = $press->getSetting('publisherInstitution');
 		if (!empty($publisherInstitution)) {
@@ -110,6 +118,12 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			}
 			$this->_addLocalizedElements($description, 'dc:contributor', $contributors);
 		}
+		
+		// Date submitted
+		$description->addStatement('dcterms:dateSubmitted', date('Y-m-d', strtotime($monograph->getDateSubmitted())));
+		
+		// Issued
+		$description->addStatement('dcterms:issued', date('Y-m-d', strtotime($monograph->getDatePublished())));
 		
 		// Type
 		$types = array_merge_recursive(
@@ -164,7 +178,30 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			$description->addStatement('dc:rights', $salesRight->getNameForONIXCode());
 		}
 		
+ 		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
+		$availableFiles = array_filter(
+				$submissionFileDao->getLatestRevisions($monograph->getId()),
+				create_function('$a', 'return $a->getViewable() && $a->getDirectSalesPrice() !== null && $a->getAssocType() == ASSOC_TYPE_PUBLICATION_FORMAT;')
+		);
 
+		$fileCounter = 0;
+		foreach ($availableFiles as $availableFile) {
+			if ($availableFile->getAssocId() == $publicationFormat->getId()) {
+				// File number
+				$fileCounter++;
+				$description->addStatement('ddb:fileNumber', $fileCounter);
+				
+				// File Properties
+				// $availableFile->getServerFileName()
+				// $availableFile->getNiceFileSize()
+				
+				// Transfer
+				$description->addStatement('ddb:transfer', $availableFile->getFilePath());
+
+				#break;
+			}
+		};
+		
 		Hookregistry::call('Xmdp22SchemaPublicationFormatAdapter::extractMetadataFromDataObject', array(&$this, $monograph, $press, &$description));
 
 		return $description;
