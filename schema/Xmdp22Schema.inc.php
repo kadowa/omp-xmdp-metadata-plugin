@@ -30,7 +30,7 @@ class Xmdp22Schema extends MetadataSchema {
 		);
 
 		$this->addProperty('dc:title', METADATA_PROPERTY_TYPE_STRING, true, METADATA_PROPERTY_CARDINALITY_MANY);
-		$this->addProperty('dc:creator', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
+		$this->addProperty('dc:creator', array(METADATA_PROPERTY_TYPE_COMPOSITE => ASSOC_TYPE_AUTHOR), false, METADATA_PROPERTY_CARDINALITY_MANY);
 		$this->addProperty('dc:subject', METADATA_PROPERTY_TYPE_STRING, true, METADATA_PROPERTY_CARDINALITY_MANY);
 		$this->addProperty('dcterms:tableOfContents', METADATA_PROPERTY_TYPE_STRING, true, METADATA_PROPERTY_CARDINALITY_MANY);
 		$this->addProperty('dcterms:abstract', METADATA_PROPERTY_TYPE_STRING, true, METADATA_PROPERTY_CARDINALITY_MANY);

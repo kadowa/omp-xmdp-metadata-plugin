@@ -73,21 +73,26 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		$press = $oaiDao->getPress($monograph->getPressId());
 		
 		$description = $this->instantiateMetadataDescription();
-
+		
+		import('plugins.metadata.xmdp22.schema.Pc14NameSchema');
+		$pc = new MetadataDescription('plugins.metadata.xmdp22.schema.Pc14NameSchema', ASSOC_TYPE_AUTHOR);
+		
 		// Title
 		$this->_addLocalizedElements($description, 'dc:title', $monograph->getTitle(null));
 		
 		// Creator
-		$authors = $monograph->getAuthors();
-		foreach($authors as $author) {
-			$authorName = $author->getFullName(true);
-			$affiliation = $author->getLocalizedAffiliation();
-			if (!empty($affiliation)) {
-				$authorName .= '; ' . $affiliation;
-			}
-			$description->addStatement('dc:creator', $authorName);
-			unset($authorName);
-		}
+		
+ 		$authors = $monograph->getAuthors();
+ 		foreach($authors as $author) {
+ 			$authorName = $author->getFullName(true);#$author->getFirstName();#
+// 			$affiliation = $author->getLocalizedAffiliation();
+// 			if (!empty($affiliation)) {
+// 				$authorName .= '; ' . $affiliation;
+// 			}
+ 			$pc->addStatement('pc:person', $authorName);
+// 			$description->addStatement('dc:creator', $pc);
+// 			unset($authorName);
+ 		}
 		
 		// Subject
 		$subjects = array_merge_recursive(
