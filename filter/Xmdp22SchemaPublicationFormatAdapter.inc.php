@@ -84,14 +84,14 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		
  		$authors = $monograph->getAuthors();
  		foreach($authors as $author) {
- 			$authorName = $author->getFullName(true);#$author->getFirstName();#
+ 			$authorName = $author->getFullName(true);
 // 			$affiliation = $author->getLocalizedAffiliation();
 // 			if (!empty($affiliation)) {
 // 				$authorName .= '; ' . $affiliation;
 // 			}
- 			$pc->addStatement('pc:person', $authorName);
-// 			$description->addStatement('dc:creator', $pc);
-// 			unset($authorName);
+ 			$pc->addStatement('pc:person/pc:name/pc:foreName', $author->getFirstName());
+ 			$pc->addStatement('pc:person/pc:name/pc:surName', $author->getLastName());
+ 			$description->addStatement('dc:creator', $pc);
  		}
 		
 		// Subject
@@ -203,7 +203,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 				// Transfer
 				$description->addStatement('ddb:transfer', $availableFile->getFilePath());
 
-				#break;
+				break; // use first file as default for prototype
 			}
 		};
 		
