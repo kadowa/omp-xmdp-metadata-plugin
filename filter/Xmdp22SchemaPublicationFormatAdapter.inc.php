@@ -89,8 +89,8 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 // 			if (!empty($affiliation)) {
 // 				$authorName .= '; ' . $affiliation;
 // 			}
- 			$pc->addStatement('pc:person/pc:name/pc:foreName', $author->getFirstName());
- 			$pc->addStatement('pc:person/pc:name/pc:surName', $author->getLastName());
+ 			$pc->addStatement('pc:person/pc:name[@type="nameUsedByThePerson"]/pc:foreName', $author->getFirstName());
+ 			$pc->addStatement('pc:person/pc:name[@type="nameUsedByThePerson"]/pc:surName', $author->getLastName());
  			$description->addStatement('dc:creator', $pc);
  		}
 		
@@ -125,10 +125,10 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		}
 		
 		// Date submitted
-		$description->addStatement('dcterms:dateSubmitted', date('Y-m-d', strtotime($monograph->getDateSubmitted())));
+		//$description->addStatement('dcterms:dateSubmitted', date('Y', strtotime($monograph->getDateSubmitted())));
 		
 		// Issued
-		$description->addStatement('dcterms:issued', date('Y-m-d', strtotime($monograph->getDatePublished())));
+		$description->addStatement('dcterms:issued', date('Y', strtotime($monograph->getDatePublished())));
 		
 		// Type
 		$types = array_merge_recursive(

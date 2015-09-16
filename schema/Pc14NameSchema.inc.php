@@ -29,8 +29,8 @@ class Pc14NameSchema extends MetadataSchema {
 				$appSpecificAssocType
 		);
 
-		$this->addProperty('pc:person/pc:name/pc:foreName', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
-		$this->addProperty('pc:person/pc:name/pc:surName', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
+		$this->addProperty('pc:person/pc:name[@type="nameUsedByThePerson"]/pc:foreName', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
+		$this->addProperty('pc:person/pc:name[@type="nameUsedByThePerson"]/pc:surName', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
 	}
 }
 ?>
