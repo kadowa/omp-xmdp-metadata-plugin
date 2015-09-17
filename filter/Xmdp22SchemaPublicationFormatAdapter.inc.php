@@ -202,8 +202,8 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 				// $availableFile->getNiceFileSize()
 				
 				// Transfer
-				$this->_addElementsWrapper($description, 'ddb:transfer', $availableFile->getFilePath());
-
+				$this->_addElementsWrapper($description, 'ddb:transfer', Request::url($press->getPath(), 
+						'catalog', 'download', array($monograph->getId(), $publicationFormat->getId(), $availableFile->getFileIdAndRevision())));
 				break; // use first file as default for prototype
 			}
 		};
