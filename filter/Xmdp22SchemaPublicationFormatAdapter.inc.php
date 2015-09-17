@@ -91,7 +91,8 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 // 			}
  			$pc->addStatement('pc:person/pc:name[@type="nameUsedByThePerson"]/pc:foreName', $author->getFirstName());
  			$pc->addStatement('pc:person/pc:name[@type="nameUsedByThePerson"]/pc:surName', $author->getLastName());
- 			$description->addStatement('dc:creator', $pc);
+ 			//$description->addStatement('dc:creator', $pc);
+ 			$this->_addElementsWrapper($description, 'dc:creator', $pc);
  		}
 		
 		// Subject
@@ -128,7 +129,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		//$description->addStatement('dcterms:dateSubmitted', date('Y', strtotime($monograph->getDateSubmitted())));
 		
 		// Issued
-		$description->addStatement('dcterms:issued', date('Y', strtotime($monograph->getDatePublished())));
+		$this->_addElementsWrapper($description, 'dcterms:issued', date('Y', strtotime($monograph->getDatePublished())));
 		
 		// Type
 		$types = array_merge_recursive(
@@ -142,18 +143,18 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		$entryKeys = $onixCodelistItemDao->getCodes('List7'); // List7 is for object formats
 		if ($publicationFormat->getEntryKey()) {
 			$formatName = $entryKeys[$publicationFormat->getEntryKey()];
-			$description->addStatement('dc:format', $formatName);
+			$this->_addElementsWrapper($description, 'dc:format', $formatName);
 		}
 		
 		// Identifier: URL
 		if (is_a($monograph, 'PublishedMonograph')) {
-			$description->addStatement('dc:identifier', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())));
+			$this->_addElementsWrapper($description, 'dc:identifier', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())));
 		}
 		
 		// Identifier: others
 		$identificationCodeFactory = $publicationFormat->getIdentificationCodes();
 		while ($identificationCode = $identificationCodeFactory->next()) {
-			$description->addStatement('dc:identifier', $identificationCode->getNameForONIXCode());
+			$this->_addElementsWrapper($description, 'dc:identifier', $identificationCode->getNameForONIXCode());
 		}
 		
 		// Source (press title and pages)
@@ -180,7 +181,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		// Rights
 		$salesRightsFactory = $publicationFormat->getSalesRights();
 		while ($salesRight = $salesRightsFactory->next()) {
-			$description->addStatement('dc:rights', $salesRight->getNameForONIXCode());
+			$this->_addElementsWrapper($description, 'dc:rights', $salesRight->getNameForONIXCode());
 		}
 		
  		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
@@ -194,14 +195,14 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			if ($availableFile->getAssocId() == $publicationFormat->getId()) {
 				// File number
 				$fileCounter++;
-				$description->addStatement('ddb:fileNumber', $fileCounter);
+				$this->_addElementsWrapper($description, 'ddb:fileNumber', $fileCounter);
 				
 				// File Properties
 				// $availableFile->getServerFileName()
 				// $availableFile->getNiceFileSize()
 				
 				// Transfer
-				$description->addStatement('ddb:transfer', $availableFile->getFilePath());
+				$this->_addElementsWrapper($description, 'ddb:transfer', $availableFile->getFilePath());
 
 				break; // use first file as default for prototype
 			}
@@ -234,9 +235,17 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		foreach(stripAssocArray((array) $localizedValues) as $locale => $values) {
 			if (is_scalar($values)) $values = array($values);
 			foreach($values as $value) {
-				$description->addStatement($propertyName, $value, $locale);
+					if ($value) {
+						$description->addStatement($propertyName, $value, $locale);
+					}
 				unset($value);
 			}
+		}
+	}
+	
+	function _addElementsWrapper(&$description, $propertyName, $value) {
+		if ($value) {
+			$description->addStatement($propertyName, $value);
 		}
 	}
 }
