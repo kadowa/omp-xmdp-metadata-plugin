@@ -17,6 +17,8 @@
 
 
 import('lib.pkp.classes.metadata.MetadataDataObjectAdapter');
+import('plugins.metadata.xmdp22.schema.Pc14NameSchema');
+import('plugins.metadata.xmdp22.schema.CC21InstitutionSchema');
 
 class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 	/**
@@ -73,39 +75,34 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		$press = $oaiDao->getPress($monograph->getPressId());
 		
 		$description = $this->instantiateMetadataDescription();
-		
-		import('plugins.metadata.xmdp22.schema.Pc14NameSchema');
-		$pc = new MetadataDescription('plugins.metadata.xmdp22.schema.Pc14NameSchema', ASSOC_TYPE_AUTHOR);
-		
+
 		// Title
-		$this->_addLocalizedElements($description, 'dc:title', $monograph->getTitle(null));
+		$this->_addLocalizedElements($description, 'dc:title[@xsi:type="ddb:titleISO639-2"]', $monograph->getTitle(null));
 		
 		// Creator
 		
  		$authors = $monograph->getAuthors();
  		foreach($authors as $author) {
- 			$authorName = $author->getFullName(true);
-// 			$affiliation = $author->getLocalizedAffiliation();
-// 			if (!empty($affiliation)) {
-// 				$authorName .= '; ' . $affiliation;
-// 			}
- 			$pc->addStatement('pc:person/pc:name[@type="nameUsedByThePerson"]/pc:foreName', $author->getFirstName());
- 			$pc->addStatement('pc:person/pc:name[@type="nameUsedByThePerson"]/pc:surName', $author->getLastName());
- 			//$description->addStatement('dc:creator', $pc);
- 			$this->_addElementsWrapper($description, 'dc:creator', $pc);
+			
+			$pc = new MetadataDescription('plugins.metadata.xmdp22.schema.Pc14NameSchema', ASSOC_TYPE_AUTHOR);
+			
+ 			$this->_addElementsWrapper($pc, 'pc:person/pc:name[@xsi:type="nameUsedByThePerson"]/pc:foreName', $author->getFirstName());
+ 			$this->_addElementsWrapper($pc, 'pc:person/pc:name[@xsi:type="nameUsedByThePerson"]/pc:surName', $author->getLastName());
+
+ 			$this->_addElementsWrapper($description, 'dc:creator[@xsi:type="pc:MetaPers"]', $pc);
  		}
-		
+ 		
 		// Subject
 		$subjects = array_merge_recursive(
 				(array) $monograph->getDiscipline(null),
 				(array) $monograph->getSubject(null),
 				(array) $monograph->getSubjectClass(null));
-		$this->_addLocalizedElements($description, 'dc:subject', $subjects);
+		$this->_addLocalizedElements($description, 'dc:subject[@xsi:type="xMetaDiss:noScheme"]', $subjects);
 		
 		// Table of Contents
 		
 		// Abstract
-		$this->_addLocalizedElements($description, 'dcterms:abstract', $monograph->getAbstract(null));
+		$this->_addLocalizedElements($description, 'dcterms:abstract[@xsi:type="ddb:contentISO639-2"]', $monograph->getAbstract(null));
 		
 		// Publisher
 		$publisherInstitution = $press->getSetting('publisherInstitution');
@@ -114,7 +111,14 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		} else {
 			$publishers = $press->getName(null); // Default
 		}
-		$this->_addLocalizedElements($description, 'dc:publisher', $publishers);
+		
+		$cc = new MetadataDescription('plugins.metadata.xmdp22.schema.CC21InstitutionSchema', ASSOC_TYPE_PRESS);
+		$this->_addElementsWrapper($cc, 'cc:universityOrInstitution/cc:name', "bla");
+		$this->_addElementsWrapper($cc, 'cc:universityOrInstitution/cc:place', "bla");
+		$this->_addElementsWrapper($cc, 'cc:address', "bla");
+		
+		$this->_addElementsWrapper($description, 'dc:publisher[@xsi:type="cc:Publisher"]', $cc);
+		//$this->_addLocalizedElements($description, 'dc:publisher', $publishers);
 		
 		// Contributor
 		$contributors = $monograph->getSponsor(null);
@@ -129,14 +133,15 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		//$description->addStatement('dcterms:dateSubmitted', date('Y', strtotime($monograph->getDateSubmitted())));
 		
 		// Issued
-		$this->_addElementsWrapper($description, 'dcterms:issued', date('Y', strtotime($monograph->getDatePublished())));
+		$this->_addElementsWrapper($description, 'dcterms:issued[@xsi:type="dcterms:W3CDTF"]', date('Y-m-d', strtotime($monograph->getDatePublished())));
 		
 		// Type
 		$types = array_merge_recursive(
 				array(AppLocale::getLocale() => __('rt.metadata.pkp.dctype')),
 				(array) $monograph->getType(null)
 		);
-		$this->_addLocalizedElements($description, 'dc:type', $types);
+		// FIXME: publication types start with lowercase letter
+		$this->_addLocalizedElements($description, 'dc:type[@xsi:type="dini:PublType"]', $types);
 		
 		// Format
 		$onixCodelistItemDao = DAORegistry::getDAO('ONIXCodelistItemDAO');
@@ -147,8 +152,9 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		}
 		
 		// Identifier: URL
+		// FIXME: Identifier should be URN or DOI
 		if (is_a($monograph, 'PublishedMonograph')) {
-			$this->_addElementsWrapper($description, 'dc:identifier', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())));
+			$this->_addElementsWrapper($description, 'dc:identifier[@xsi:type="urn:nbn"]', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())));
 		}
 		
 		// Identifier: others
@@ -168,6 +174,15 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		$this->_addLocalizedElements($description, 'dc:source', $sources);
 		
 		// Language
+		// FIXME: better fallback?
+		// TODO: make language obligatory
+		$language = $monograph->getLanguage();
+		if (!$language) {
+			$language = AppLocale::get3LetterFrom2LetterIsoLanguage(substr($press->getPrimaryLocale(), 0, 2));
+		} else {
+			$language = AppLocale::get3LetterFrom2LetterIsoLanguage($language);
+		}
+		$this->_addElementsWrapper($description, 'dc:language[@xsi:type="dcterms:ISO639-2"]', $language);
 		
 		// Relation
 		
@@ -176,7 +191,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 				(array) $monograph->getCoverageGeo(null),
 				(array) $monograph->getCoverageChron(null),
 				(array) $monograph->getCoverageSample(null));
-		$this->_addLocalizedElements($description, 'dc:coverage', $coverage);
+		$this->_addLocalizedElements($description, 'dc:coverage[@xsi:type="ddb:encoding"]', $coverage);
 		
 		// Rights
 		$salesRightsFactory = $publicationFormat->getSalesRights();
@@ -235,18 +250,18 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		foreach(stripAssocArray((array) $localizedValues) as $locale => $values) {
 			if (is_scalar($values)) $values = array($values);
 			foreach($values as $value) {
-					if ($value) {
+					//if ($value) {
 						$description->addStatement($propertyName, $value, $locale);
-					}
+					//}
 				unset($value);
 			}
 		}
 	}
 	
 	function _addElementsWrapper(&$description, $propertyName, $value) {
-		if ($value) {
+		//if ($value) {
 			$description->addStatement($propertyName, $value);
-		}
+		//}
 	}
 }
 ?>

@@ -110,9 +110,9 @@ class Xmdp22DescriptionXmlFilter extends PersistableFilter {
 	 * @param $metadataDescription MetadataDescription
 	 * @return XMLNode|DOMDocument
 	 */
-	function &_processCompositeProperty(&$doc, $elementName, &$metadataDescription) {
+	function &_processCompositeProperty(&$doc, $nodePath, &$metadataDescription) {
 		// Create the root element.
-		$root =& XMLCustomWriter::createElement($doc, $elementName);
+		$root =& $this->_createNode($doc, $nodePath);
 
 		// Prepare the XMDP hierarchy from the XMDP name MetadataDescription instance.
 		$documentHierarchy =& $this->_buildDocumentHierarchy($doc, $root, $metadataDescription);
@@ -136,14 +136,7 @@ class Xmdp22DescriptionXmlFilter extends PersistableFilter {
 	function &_buildDocumentHierarchy(&$doc, &$root, &$description) {
 		// Get the schema.
 		$xmdp22Schema =& $description->getMetadataSchema();
-		if (is_a($xmdp22Schema, 'Xmdp22Schema')) {
-			// Identify the cataloging language.
-			$catalogingLanguage = 'undefined';
-		} else {
-			// This must be a PC name schema.
-			assert(is_a($xmdp22Schema, 'Pc14NameSchema'));
-			$catalogingLanguage = 'undefined';
-		}
+		$catalogingLanguage = 'undefined';
 
 		// Initialize the document hierarchy with the root node.
 		$documentHierarchy = array(
@@ -233,8 +226,11 @@ class Xmdp22DescriptionXmlFilter extends PersistableFilter {
 						// it differs from the cataloging language.
 						$translatedNodes = $nodes;
 						if ($isoLanguage != $catalogingLanguage) {
-							assert(strpos($translatedNodes[0], '[') === false);
-							$translatedNodes[0] .= '[@lang="'.$isoLanguage.'"]';
+							if (strpos($translatedNodes[0], '[') === false) {
+								$translatedNodes[0] .= '[@lang="'.$isoLanguage.'"]';
+							} else {
+								$translatedNodes[0] = substr($translatedNodes[0], 0, -1) . ' @lang="' . $isoLanguage . '"]';
+							}
 						}
 
 						// Create the node hierarchy for the statement.
