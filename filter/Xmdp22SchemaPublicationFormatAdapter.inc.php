@@ -86,10 +86,10 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			
 			$pc = new MetadataDescription('plugins.metadata.xmdp22.schema.Pc14NameSchema', ASSOC_TYPE_AUTHOR);
 			
- 			$this->_addElementsWrapper($pc, 'pc:person/pc:name[@xsi:type="nameUsedByThePerson"]/pc:foreName', $author->getFirstName());
- 			$this->_addElementsWrapper($pc, 'pc:person/pc:name[@xsi:type="nameUsedByThePerson"]/pc:surName', $author->getLastName());
+ 			$this->_checkForContentAndAddElement($pc, 'pc:person/pc:name[@xsi:type="nameUsedByThePerson"]/pc:foreName', $author->getFirstName());
+ 			$this->_checkForContentAndAddElement($pc, 'pc:person/pc:name[@xsi:type="nameUsedByThePerson"]/pc:surName', $author->getLastName());
 
- 			$this->_addElementsWrapper($description, 'dc:creator[@xsi:type="pc:MetaPers"]', $pc);
+ 			$this->_checkForContentAndAddElement($description, 'dc:creator[@xsi:type="pc:MetaPers"]', $pc);
  		}
  		
 		// Subject
@@ -113,12 +113,11 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		}
 		
 		$cc = new MetadataDescription('plugins.metadata.xmdp22.schema.CC21InstitutionSchema', ASSOC_TYPE_PRESS);
-		$this->_addElementsWrapper($cc, 'cc:universityOrInstitution/cc:name', "bla");
-		$this->_addElementsWrapper($cc, 'cc:universityOrInstitution/cc:place', "bla");
-		$this->_addElementsWrapper($cc, 'cc:address', "bla");
+		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:name', "bla");
+		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:place', "bla");
+		$this->_checkForContentAndAddElement($cc, 'cc:address', "bla");
 		
-		$this->_addElementsWrapper($description, 'dc:publisher[@xsi:type="cc:Publisher"]', $cc);
-		//$this->_addLocalizedElements($description, 'dc:publisher', $publishers);
+		$this->_checkForContentAndAddElement($description, 'dc:publisher[@xsi:type="cc:Publisher"]', $cc);
 		
 		// Contributor
 		$contributors = $monograph->getSponsor(null);
@@ -133,7 +132,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		//$description->addStatement('dcterms:dateSubmitted', date('Y', strtotime($monograph->getDateSubmitted())));
 		
 		// Issued
-		$this->_addElementsWrapper($description, 'dcterms:issued[@xsi:type="dcterms:W3CDTF"]', date('Y-m-d', strtotime($monograph->getDatePublished())));
+		$this->_checkForContentAndAddElement($description, 'dcterms:issued[@xsi:type="dcterms:W3CDTF"]', date('Y-m-d', strtotime($monograph->getDatePublished())));
 		
 		// Type
 		$types = array_merge_recursive(
@@ -148,19 +147,19 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		$entryKeys = $onixCodelistItemDao->getCodes('List7'); // List7 is for object formats
 		if ($publicationFormat->getEntryKey()) {
 			$formatName = $entryKeys[$publicationFormat->getEntryKey()];
-			$this->_addElementsWrapper($description, 'dc:format', $formatName);
+			$this->_checkForContentAndAddElement($description, 'dc:format', $formatName);
 		}
 		
 		// Identifier: URL
-		// FIXME: Identifier should be URN or DOI
+		// FIXME: Identifier should be URN and/or DOI
 		if (is_a($monograph, 'PublishedMonograph')) {
-			$this->_addElementsWrapper($description, 'dc:identifier[@xsi:type="urn:nbn"]', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())));
+			$description->addStatement('dc:identifier[@xsi:type="urn:nbn"]', '');
 		}
 		
 		// Identifier: others
 		$identificationCodeFactory = $publicationFormat->getIdentificationCodes();
 		while ($identificationCode = $identificationCodeFactory->next()) {
-			$this->_addElementsWrapper($description, 'dc:identifier', $identificationCode->getNameForONIXCode());
+			$this->_checkForContentAndAddElement($description, 'dc:identifier', $identificationCode->getNameForONIXCode());
 		}
 		
 		// Source (press title and pages)
@@ -182,7 +181,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		} else {
 			$language = AppLocale::get3LetterFrom2LetterIsoLanguage($language);
 		}
-		$this->_addElementsWrapper($description, 'dc:language[@xsi:type="dcterms:ISO639-2"]', $language);
+		$this->_checkForContentAndAddElement($description, 'dc:language[@xsi:type="dcterms:ISO639-2"]', $language);
 		
 		// Relation
 		
@@ -191,12 +190,12 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 				(array) $monograph->getCoverageGeo(null),
 				(array) $monograph->getCoverageChron(null),
 				(array) $monograph->getCoverageSample(null));
-		$this->_addLocalizedElements($description, 'dc:coverage[@xsi:type="ddb:encoding"]', $coverage);
+		$this->_addLocalizedElements($description, 'dc:coverage[@xsi:type="ddb:encoding" @ddb:Scheme="None"]', $coverage);
 		
 		// Rights
 		$salesRightsFactory = $publicationFormat->getSalesRights();
 		while ($salesRight = $salesRightsFactory->next()) {
-			$this->_addElementsWrapper($description, 'dc:rights', $salesRight->getNameForONIXCode());
+			$this->_checkForContentAndAddElement($description, 'dc:rights', $salesRight->getNameForONIXCode());
 		}
 		
  		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
@@ -205,23 +204,49 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 				create_function('$a', 'return $a->getViewable() && $a->getDirectSalesPrice() !== null && $a->getAssocType() == ASSOC_TYPE_PUBLICATION_FORMAT;')
 		);
 
-		$fileCounter = 0;
+		// File stuff
+		// TODO: container / select full document
+		$files = array();
 		foreach ($availableFiles as $availableFile) {
 			if ($availableFile->getAssocId() == $publicationFormat->getId()) {
-				// File number
-				$fileCounter++;
-				$this->_addElementsWrapper($description, 'ddb:fileNumber', $fileCounter);
-				
-				// File Properties
-				// $availableFile->getServerFileName()
-				// $availableFile->getNiceFileSize()
-				
-				// Transfer
-				$this->_addElementsWrapper($description, 'ddb:transfer', Request::url($press->getPath(), 
-						'catalog', 'download', array($monograph->getId(), $publicationFormat->getId(), $availableFile->getFileIdAndRevision())));
-				break; // use first file as default for prototype
-			}
+				// Collect all files that belong to this publication format
+				$files[] = $availableFile;
+			};
 		};
+		
+		// FIXME: use first file as default for prototype
+		if ( $files ) {
+			$transferFile = $files[0];
+			$files = array( $transferFile );
+		}
+		
+		// Number of files in container
+		$this->_checkForContentAndAddElement($description, 'ddb:fileNumber', sizeof($files));
+		
+		// File Properties
+		// FIXME: make attribute configurable, add data:
+		// * ddb:fileName = $availableFile->getServerFileName()
+		// * ddb:fileSize = $availableFile->getFileSize()
+		foreach ($files as $file) {
+			$description->addStatement('ddb:fileProperties', '');
+		};
+		
+		// Transfer
+		if ( isset($transferFile) ) {
+			$this->_checkForContentAndAddElement($description, 'ddb:transfer[@ddb:type="dcterms:URI"]', Request::url($press->getPath(),
+					'catalog', 'download', array($monograph->getId(), $publicationFormat->getId(), $transferFile->getFileIdAndRevision())));
+		}
+		
+		// Contact ID
+		// TODO: make configurable via settings 
+		$description->addStatement('ddb:contact[@ddb:contactID="F6000-0201"]', '');
+		
+		// Additional identifiers
+		$this->_checkForContentAndAddElement($description, 'ddb:identifier[@ddb:type="URL"]', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())));
+		
+		// Rights
+		// TODO: check, if "free" can really be assumed for all documents
+		$description->addStatement('ddb:rights[@ddb:kind="free"]', '');
 		
 		Hookregistry::call('Xmdp22SchemaPublicationFormatAdapter::extractMetadataFromDataObject', array(&$this, $monograph, $press, &$description));
 
@@ -250,18 +275,18 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		foreach(stripAssocArray((array) $localizedValues) as $locale => $values) {
 			if (is_scalar($values)) $values = array($values);
 			foreach($values as $value) {
-					//if ($value) {
+					if ($value) {
 						$description->addStatement($propertyName, $value, $locale);
-					//}
+					}
 				unset($value);
 			}
 		}
 	}
 	
-	function _addElementsWrapper(&$description, $propertyName, $value) {
-		//if ($value) {
+	function _checkForContentAndAddElement(&$description, $propertyName, $value) {
+		if ($value) {
 			$description->addStatement($propertyName, $value);
-		//}
+		}
 	}
 }
 ?>

@@ -15,22 +15,23 @@
 
 import('lib.pkp.classes.metadata.MetadataSchema');
 
-class Pc14NameSchema extends MetadataSchema {
+class CC21InstitutionSchema extends MetadataSchema {
 	/**
 	 * Constructor
 	 * @param $appSpecificAssocType integer
 	 */
-	function Pc14NameSchema($appSpecificAssocType = ASSOC_TYPE_AUTHOR, $classname = 'plugins.metadata.xmdp22.schema.Pc14NameSchema') {
+	function CC21InstitutionSchema($appSpecificAssocType = ASSOC_TYPE_PRESS, $classname = 'plugins.metadata.xmdp22.schema.CC21InstitutionSchema') {
 		// Configure the meta-data schema.
 		parent::MetadataSchema(
-				'pc-1.4',
-				'pc',
+				'cc-2.1',
+				'cc',
 				$classname,
 				$appSpecificAssocType
 		);
 
-		$this->addProperty('pc:person/pc:name[@xsi:type="nameUsedByThePerson"]/pc:foreName', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
-		$this->addProperty('pc:person/pc:name[@xsi:type="nameUsedByThePerson"]/pc:surName', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
+		$this->addProperty('cc:universityOrInstitution/cc:name', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_ONE);
+		$this->addProperty('cc:universityOrInstitution/cc:place', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
+		$this->addProperty('cc:address', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_ONE);
 	}
 }
 ?>
