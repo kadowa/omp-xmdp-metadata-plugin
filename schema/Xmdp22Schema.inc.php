@@ -40,7 +40,7 @@ class Xmdp22Schema extends MetadataSchema {
 		$this->addProperty('dcterms:issued[@xsi:type="dcterms:W3CDTF"]', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_ONE, null, null, true);
 		$this->addProperty('dc:type[@xsi:type="dini:PublType"]', METADATA_PROPERTY_TYPE_STRING, true, METADATA_PROPERTY_CARDINALITY_MANY, null, null, true);
 //		$this->addProperty('dc:format', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
-		$this->addProperty('dc:identifier[@xsi:type="urn:nbn"]', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_ONE, null, null, true);
+		$this->addProperty('dc:identifier[@xsi:type="doi"]', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_ONE, null, null, true);
 		$this->addProperty('dc:source', METADATA_PROPERTY_TYPE_STRING, true, METADATA_PROPERTY_CARDINALITY_MANY);
 		$this->addProperty('dc:language[@xsi:type="dcterms:ISO639-2"]', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY, null, null, true);
 //		$this->addProperty('dc:relation', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);

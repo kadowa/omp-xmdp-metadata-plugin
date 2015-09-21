@@ -112,10 +112,12 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			$publishers = $press->getName(null); // Default
 		}
 		
+		// FIXME: Press name as fallback
+		// FIXME: Where to get the place?
 		$cc = new MetadataDescription('plugins.metadata.xmdp22.schema.CC21InstitutionSchema', ASSOC_TYPE_PRESS);
-		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:name', "bla");
-		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:place', "bla");
-		$this->_checkForContentAndAddElement($cc, 'cc:address', "bla");
+		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:name', $press->getName());
+		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:place', $press->getData("address"));
+		$this->_checkForContentAndAddElement($cc, 'cc:address', $press->getData("address"));
 		
 		$this->_checkForContentAndAddElement($description, 'dc:publisher[@xsi:type="cc:Publisher"]', $cc);
 		
@@ -150,16 +152,13 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			$this->_checkForContentAndAddElement($description, 'dc:format', $formatName);
 		}
 		
-		// Identifier: URL
-		// FIXME: Identifier should be URN and/or DOI
-		if (is_a($monograph, 'PublishedMonograph')) {
-			$description->addStatement('dc:identifier[@xsi:type="urn:nbn"]', '');
-		}
-		
-		// Identifier: others
-		$identificationCodeFactory = $publicationFormat->getIdentificationCodes();
-		while ($identificationCode = $identificationCodeFactory->next()) {
-			$this->_checkForContentAndAddElement($description, 'dc:identifier', $identificationCode->getNameForONIXCode());
+		// Identifier: DOI
+		$pubIdPlugins = PluginRegistry::loadCategory('pubIds', true);
+		if ( array_key_exists('DOIPubIdPlugin', $pubIdPlugins) ) {
+			$doi = $pubIdPlugins['DOIPubIdPlugin']->getPubId($publicationFormat);
+		//	if (is_a($monograph, 'PublishedMonograph')) {
+			$description->addStatement('dc:identifier[@xsi:type="doi"]', $doi);
+		//	}
 		}
 		
 		// Source (press title and pages)
