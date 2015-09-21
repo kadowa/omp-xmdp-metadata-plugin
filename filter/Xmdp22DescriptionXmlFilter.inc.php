@@ -71,22 +71,6 @@ class Xmdp22DescriptionXmlFilter extends PersistableFilter {
 		XMLCustomWriter::setAttribute($root, 'xmlns:urn', 'http://www.d-nb.de/standards/urn/');
 		XMLCustomWriter::setAttribute($root, 'xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
 		XMLCustomWriter::setAttribute($root, 'xsi:schemaLocation', 'http://www.d-nb.de/standards/xmetadissplus/ http://www.d-nb.de/standards/xmetadissplus/xmetadissplus.xsd');
-
-/* 		"\txmlns:xMetaDiss=\"http://www.d-nb.de/standards/xmetadissplus/\"\n" .
-		"\txmlns:cc=\"http://www.d-nb.de/standards/cc/\"\n" .
-		"\txmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n" .
-		"\txmlns:dcmitype=\"http://purl.org/dc/dcmitype\"\n" .
-		"\txmlns:dcterms=\"http://purl.org/dc/terms/\"\n" .
-		"\txmlns:ddb=\"http://www.d-nb.de/standards/ddb/\"\n" .
-		"\txmlns:dini=\"http://www.d-nb.de/standards/xmetadissplus/type/\"\n" .
-		"\txmlns:doi=\"http://www.d-nb.de/standards/doi/\"\n" .
-		"\txmlns:hdl=\"http://www.d-nb.de/standards/hdl/\"\n" .
-		"\txmlns:pc=\"http://www.d-nb.de/standards/pc/\"\n" .
-		"\txmlns=\"http://www.d-nb.de/standards/subject/\"\n" .
-		"\txmlns:thesis=\"http://www.ndltd.org/standards/metadata/etdms/1.0/\"\n" .
-		"\txmlns:urn=\"http://www.d-nb.de/standards/urn/\"\n" .
-		"\txsi:schemaLocation=\"http://www.d-nb.de/standards/xmetadissplus/ http://www.d-nb.de/standards/xmetadissplus/xmetadissplus.xsd\"\n" .
-		"\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"; */
 		
 		// Prepare the XMDP document hierarchy from the XMDP MetadataDescription instance.
 		$documentHierarchy =& $this->_buildDocumentHierarchy($doc, $root, $input);
@@ -245,6 +229,7 @@ class Xmdp22DescriptionXmlFilter extends PersistableFilter {
 									assert($cardinality == METADATA_PROPERTY_CARDINALITY_ONE);
 									assert(!is_object($translatedValue));
 									$attributeName = trim($nodeName, '[@"]');
+									
 									XMLCustomWriter::setAttribute($root, $attributeName, (string)$translatedValue);
 									continue;
 								}
@@ -328,7 +313,31 @@ class Xmdp22DescriptionXmlFilter extends PersistableFilter {
 
 		// Create the element.
 		$newNode =& XMLCustomWriter::createElement($doc, $element);
-
+		
+		// Check for configurable attributes in element value, remove them from value
+		// and add them to regular attributes
+		$attributeOffset = strpos($value, '[@');
+		if ($attributeOffset !== false) {
+			// no static attributes
+			if (count($elementPlusAttributes) < 2) {
+				$elementPlusAttributes[] = '';
+			}
+			error_log("myLog: " .$attributeOffset);
+			
+			if ($attributeOffset !== 0) {
+				$value = substr($value, 0, $attributeOffset);
+				$elementPlusAttributes[1] = rtrim($elementPlusAttributes[1], ']') . ltrim(substr($value, $attributeOffset), '[');
+			}
+			else {
+				$elementPlusAttributes[1] = rtrim($elementPlusAttributes[1], ']') . ltrim(substr($value, $attributeOffset), '[');
+				$value = "";
+				//error_log(var_export($elementPlusAttributes[1]));
+			}
+		}
+		if (count($elementPlusAttributes) == 2) {
+			//error_log("myLog: " .$elementPlusAttributes[1] . $nodePath);
+		}
+		
 		// Add attributes.
 		if (count($elementPlusAttributes) == 2) {
 			// Separate the attribute key/value pairs.

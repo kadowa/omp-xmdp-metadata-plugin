@@ -46,12 +46,12 @@ class Xmdp22Schema extends MetadataSchema {
 //		$this->addProperty('dc:relation', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
 		$this->addProperty('dc:coverage[@xsi:type="ddb:encoding" @ddb:Scheme="None"]', METADATA_PROPERTY_TYPE_STRING, true, METADATA_PROPERTY_CARDINALITY_MANY);
 		$this->addProperty('dcterms:hasPart[@xsi:type="dcterms:URI"]', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
-		$this->addProperty('ddb:contact[@ddb:contactID="F6000-0201"]', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
+		$this->addProperty('ddb:contact', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
 		$this->addProperty('ddb:fileNumber', METADATA_PROPERTY_TYPE_INTEGER, false, METADATA_PROPERTY_CARDINALITY_MANY);
 		$this->addProperty('ddb:fileProperties', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
 		$this->addProperty('ddb:transfer[@ddb:type="dcterms:URI"]', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY, null, null, true);
 		$this->addProperty('ddb:identifier[@ddb:type="URL"]', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY);
-		$this->addProperty('ddb:rights[@ddb:kind="free"]', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY, null, null, true);
+		$this->addProperty('ddb:rights', METADATA_PROPERTY_TYPE_STRING, false, METADATA_PROPERTY_CARDINALITY_MANY, null, null, true);
 	}
 }
 ?>

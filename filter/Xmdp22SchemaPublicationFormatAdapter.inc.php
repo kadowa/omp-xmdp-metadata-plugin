@@ -197,38 +197,35 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		while ($salesRight = $salesRightsFactory->next()) {
 			$this->_checkForContentAndAddElement($description, 'dc:rights', $salesRight->getNameForONIXCode());
 		}
-		
- 		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
-		$availableFiles = array_filter(
-				$submissionFileDao->getLatestRevisions($monograph->getId()),
-				create_function('$a', 'return $a->getViewable() && $a->getDirectSalesPrice() !== null && $a->getAssocType() == ASSOC_TYPE_PUBLICATION_FORMAT;')
-		);
 
 		// File stuff
 		// TODO: container / select full document
-		$files = array();
-		foreach ($availableFiles as $availableFile) {
-			if ($availableFile->getAssocId() == $publicationFormat->getId()) {
-				// Collect all files that belong to this publication format
-				$files[] = $availableFile;
-			};
-		};
+  		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
+ 		$availableFiles = array_filter(
+ 				$submissionFileDao->getLatestRevisions($monograph->getId()),
+ 				create_function('$a', 'return $a->getViewable() && $a->getDirectSalesPrice() !== null && $a->getAssocType() == ASSOC_TYPE_PUBLICATION_FORMAT;')
+ 		);
+
+ 		$files = array();
+ 		foreach ($availableFiles as $availableFile) {
+ 			if ($availableFile->getAssocId() == $publicationFormat->getId()) {
+ 				// Collect all files that belong to this publication format
+ 				$files[] = $availableFile;
+ 			};
+ 		};
 		
-		// FIXME: use first file as default for prototype
-		if ( $files ) {
-			$transferFile = $files[0];
-			$files = array( $transferFile );
-		}
+ 		// FIXME: use first file as default for prototype
+ 		if ( $files ) {
+ 			$transferFile = $files[0];
+ 			$files = array( $transferFile );
+ 		}
 		
 		// Number of files in container
 		$this->_checkForContentAndAddElement($description, 'ddb:fileNumber', sizeof($files));
 		
 		// File Properties
-		// FIXME: make attribute configurable, add data:
-		// * ddb:fileName = $availableFile->getServerFileName()
-		// * ddb:fileSize = $availableFile->getFileSize()
 		foreach ($files as $file) {
-			$description->addStatement('ddb:fileProperties', '');
+			$description->addStatement('ddb:fileProperties', '[@ddb:fileName="'.$availableFile->getServerFileName().'" @ddbfileSize="'.$availableFile->getFileSize().'"]');
 		};
 		
 		// Transfer
@@ -239,18 +236,20 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		
 		// Contact ID
 		// TODO: make configurable via settings
-		$description->addStatement('ddb:contact[@ddb:contactID="F6000-0201"]', '');
+		$contactId = 'F6000-0201';
+		$description->addStatement('ddb:contact', '[@ddb:contactID="' . $contactId .'"]');
 		
 		// Additional identifiers
 		$this->_checkForContentAndAddElement($description, 'ddb:identifier[@ddb:type="URL"]', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())));
 		
 		// Rights
 		// TODO: make configurable via settings
-		$description->addStatement('ddb:rights[@ddb:kind="free"]', '');
+		$kind = 'free';
+		$description->addStatement('ddb:rights', '[@ddb:kind="' . $kind . '"]');
 		
 		Hookregistry::call('Xmdp22SchemaPublicationFormatAdapter::extractMetadataFromDataObject', array(&$this, $monograph, $press, &$description));
 
-		return $description;
+ 		return $description;
 	}
 
 	/**
