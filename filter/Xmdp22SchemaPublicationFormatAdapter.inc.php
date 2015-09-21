@@ -138,10 +138,9 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		
 		// Type
 		$types = array_merge_recursive(
-				array(AppLocale::getLocale() => __('rt.metadata.pkp.dctype')),
-				(array) $monograph->getType(null)
+				array_map('lcfirst', array(AppLocale::getLocale() => __('rt.metadata.pkp.dctype'))),
+				array_map('lcfirst', (array) $monograph->getType(null))
 		);
-		// FIXME: publication types start with lowercase letter
 		$this->_addLocalizedElements($description, 'dc:type[@xsi:type="dini:PublType"]', $types);
 		
 		// Format
@@ -172,7 +171,6 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		$this->_addLocalizedElements($description, 'dc:source', $sources);
 		
 		// Language
-		// FIXME: better fallback?
 		// TODO: make language obligatory
 		$language = $monograph->getLanguage();
 		if (!$language) {
@@ -237,14 +235,14 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		}
 		
 		// Contact ID
-		// TODO: make configurable via settings 
+		// TODO: make configurable via settings
 		$description->addStatement('ddb:contact[@ddb:contactID="F6000-0201"]', '');
 		
 		// Additional identifiers
 		$this->_checkForContentAndAddElement($description, 'ddb:identifier[@ddb:type="URL"]', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())));
 		
 		// Rights
-		// TODO: check, if "free" can really be assumed for all documents
+		// TODO: make configurable via settings
 		$description->addStatement('ddb:rights[@ddb:kind="free"]', '');
 		
 		Hookregistry::call('Xmdp22SchemaPublicationFormatAdapter::extractMetadataFromDataObject', array(&$this, $monograph, $press, &$description));
@@ -288,4 +286,20 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		}
 	}
 }
+
+
+if(false === function_exists('lcfirst'))
+{
+	/**
+	 * Make a string's first character lowercase
+	 *
+	 * @param string $str
+	 * @return string the resulting string.
+	 */
+	function lcfirst( $str ) {
+		$str[0] = strtolower($str[0]);
+		return (string)$str;
+	}
+}
+
 ?>
