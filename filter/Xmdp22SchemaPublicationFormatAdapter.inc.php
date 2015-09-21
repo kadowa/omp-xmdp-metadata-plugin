@@ -112,12 +112,15 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			$publishers = $press->getName(null); // Default
 		}
 		
-		// FIXME: Press name as fallback
-		// FIXME: Where to get the place?
+		// Publisher
+		// Since composite elements cannot be localized, this element's content is based on the primary press locale
+		// FIXME: Address and place are obligatory schema elements, but not obligatory in OMP.
+		// FIXME: cc:place has no corresponding metadata field in OMP.
+		// FIXME: Make sure that address cannot be localized.
 		$cc = new MetadataDescription('plugins.metadata.xmdp22.schema.CC21InstitutionSchema', ASSOC_TYPE_PRESS);
-		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:name', $press->getName());
-		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:place', $press->getData("address"));
-		$this->_checkForContentAndAddElement($cc, 'cc:address', $press->getData("address"));
+		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:name', $press->getName()[$press->getPrimaryLocale()]);
+		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:place', $press->getData("mailingAddress"));
+		$this->_checkForContentAndAddElement($cc, 'cc:address', $press->getData("mailingAddress"));
 		
 		$this->_checkForContentAndAddElement($description, 'dc:publisher[@xsi:type="cc:Publisher"]', $cc);
 		
