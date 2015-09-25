@@ -14,6 +14,16 @@
 <locale name="en_US" full_name="U.S. English">
 	<message key="plugins.metadata.xmdp22.publicationFormatAdapter.displayName">XMetaDissPlus 2.2 Publication Format Adapter</message>
 	<message key="plugins.metadata.xmdp22.publicationFormatAdapter.description">Extracts meta-data from publication format.</message>
-	<message key="plugins.metadata.xmdp22.displayName">XMetaDissPlus 2.2 meta-data</message>
+	<message key="plugins.metadata.xmdp22.displayName">XMetaDissPlus 2.2</message>
 	<message key="plugins.metadata.xmdp22.description">Contributes XMetaDissPlus 2.2 schemas and application adapters.</message>
+	
+	<message key="plugins.metadata.xmdp22.manager.settings.description">This plugin generates meta-data in XMetaDissPlus 2.2 format from OMP publication formats. Required elements that cannot be mapped to OMP meta-data fields can be set here.</message>
+	
+	<message key="plugins.metadata.xmdp22.manager.settings.contactId">DNB contact identification number</message>
+	
+	<message key="plugins.metadata.xmdp22.manager.settings.cc.settings">Corporate Core Schema Supplementary Fields</message>	
+	<message key="plugins.metadata.xmdp22.manager.settings.cc.place">Publisher place</message>	
+	<message key="plugins.metadata.xmdp22.manager.settings.cc.place.required">The place of the publishing organization (e.g. Heidelberg) is a mandatory field in the Corporate Core Schema.</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.cc.address">Publisher address</message>	
+	<message key="plugins.metadata.xmdp22.manager.settings.cc.address.required">The full address of the publishing organization (e.g. Plöck 107-109, 69117 Heidelberg) is a mandatory field in the Corporate Core Schema.</message>
 </locale>

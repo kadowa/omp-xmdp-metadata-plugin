@@ -322,7 +322,6 @@ class Xmdp22DescriptionXmlFilter extends PersistableFilter {
 			if (count($elementPlusAttributes) < 2) {
 				$elementPlusAttributes[] = '';
 			}
-			error_log("myLog: " .$attributeOffset);
 			
 			if ($attributeOffset !== 0) {
 				$value = substr($value, 0, $attributeOffset);
@@ -331,13 +330,9 @@ class Xmdp22DescriptionXmlFilter extends PersistableFilter {
 			else {
 				$elementPlusAttributes[1] = rtrim($elementPlusAttributes[1], ']') . ltrim(substr($value, $attributeOffset), '[');
 				$value = "";
-				//error_log(var_export($elementPlusAttributes[1]));
 			}
 		}
-		if (count($elementPlusAttributes) == 2) {
-			//error_log("myLog: " .$elementPlusAttributes[1] . $nodePath);
-		}
-		
+
 		// Add attributes.
 		if (count($elementPlusAttributes) == 2) {
 			// Separate the attribute key/value pairs.
