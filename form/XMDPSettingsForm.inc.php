@@ -77,6 +77,15 @@ class XMDPSettingsForm extends Form {
 	function initData() {
 		$pressId = $this->_getPressId();
 		$plugin =& $this->_getPlugin();
+		
+		$this->setData("ddbKindOptions", array(
+				"free" => "free", 
+				"domain" => "domain", 
+				"blocked" => "blocked", 
+				"unkown" => "unknown"
+				)
+		);
+		
 		foreach($this->_getFormFields() as $fieldName => $fieldType) {
 			$this->setData($fieldName, $plugin->getSetting($pressId, $fieldName));
 		}

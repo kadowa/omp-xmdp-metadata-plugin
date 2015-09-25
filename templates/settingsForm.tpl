@@ -20,11 +20,21 @@
 	{fbvFormArea id="ccFormArea" class="border" title="plugins.metadata.xmdp22.manager.settings.cc.settings"}
 		{fbvFormSection}
 			<p class="pkp_help">{translate key="plugins.metadata.xmdp22.manager.settings.cc.place"}</p>
-			{fbvElement type="text" label="plugins.metadata.xmdp22.manager.settings.cc.place.required" required="true" id="cc_place" value=$cc_place maxlength="50" size=$fbvStyles.size.MEDIUM}
+			{fbvElement type="text" label="plugins.metadata.xmdp22.manager.settings.cc.place.required" required=true id="cc_place" value=$cc_place maxlength="50" size=$fbvStyles.size.MEDIUM}
 		{/fbvFormSection}
 		{fbvFormSection}
 			<p class="pkp_help">{translate key="plugins.metadata.xmdp22.manager.settings.cc.address"}</p>
-			{fbvElement type="textarea" label="plugins.metadata.xmdp22.manager.settings.cc.address.required" required="true" id="cc_address" value=$cc_address maxlength="500" size=$fbvStyles.size.MEDIUM}
+			{fbvElement type="textarea" label="plugins.metadata.xmdp22.manager.settings.cc.address.required" required=true id="cc_address" value=$cc_address maxlength="500" size=$fbvStyles.size.MEDIUM}
+		{/fbvFormSection}
+	{/fbvFormArea}
+	{fbvFormArea id="ddbFormArea" class="border" title="plugins.metadata.xmdp22.manager.settings.ddb.settings"}
+		{fbvFormSection}
+			<p class="pkp_help">{translate key="plugins.metadata.xmdp22.manager.settings.ddb.contactID"}</p>
+			{fbvElement type="text" label="plugins.metadata.xmdp22.manager.settings.ddb.contactID.addinfo" required=false id="ddb_contactID" value=$ddb_contactID maxlength="10" size=$fbvStyles.size.SMALL}
+		{/fbvFormSection}
+		{fbvFormSection}
+			<p class="pkp_help">{translate key="plugins.metadata.xmdp22.manager.settings.ddb.kind"}</p>
+			{fbvElement type="select" label="plugins.metadata.xmdp22.manager.settings.ddb.kind.required" name="ddb_kind" required=true id="ddb_kind" from=$ddbKindOptions selected=$ddb_kind translate=false size=$fbvStyles.size.MEDIUM}
 		{/fbvFormSection}
 	{/fbvFormArea}
 	{fbvFormButtons submitText="common.save"}
