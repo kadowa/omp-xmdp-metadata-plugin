@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE locale SYSTEM "../../../../../lib/pkp/dtd/locale.dtd">
+
+<!--
+  * locale.xml
+  *
+  * Copyright (c) 2014-2015 Simon Fraser University Library
+  * Copyright (c) 2003-2015 John Willinsky
+  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
+  *
+  * Localization strings for the en_US (U.S. English) locale.
+  -->
+
+<locale name="de_DE" full_name="Deutsch">
+	<message key="plugins.metadata.xmdp22.publicationFormatAdapter.displayName">XMetaDissPlus 2.2 Publikationsformat-Adapter</message>
+	<message key="plugins.metadata.xmdp22.publicationFormatAdapter.description">Extrahiert Metadaten für ein Publikationsformat.</message>
+	<message key="plugins.metadata.xmdp22.displayName">XMetaDissPlus 2.2</message>
+	<message key="plugins.metadata.xmdp22.description">Definiert XMetaDissPlus 2.2-Schema und -Adapter.</message>
+	
+	<message key="plugins.metadata.xmdp22.manager.settings.description">Dieses Plugin generiert Metadaten im XMetaDissPlus 2.2-Format. Werte für Pflichtelemente, für die kein enstprechendes Metadatenfeld in OMP vorgesehen ist, können hier gesetzt werden.</message>
+	
+	<message key="plugins.metadata.xmdp22.manager.settings.cc.settings">Ergänzende Felder für Corporate-Core-Schema</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.cc.place">Verlagsort (cc:place)</message>	
+	<message key="plugins.metadata.xmdp22.manager.settings.cc.place.required">Ort des Verlags oder der verlegenden Organisation, z.B. Heidelberg.</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.cc.address">Verlagsadresse (cc:address)</message>	
+	<message key="plugins.metadata.xmdp22.manager.settings.cc.address.required">Anschrift des Verlags oder der verlegenden Organisation, z.B. Plöck 107-109, 69117 Heidelberg.</message>
+
+	<message key="plugins.metadata.xmdp22.manager.settings.ddb.settings">Ergänzende Felder für DNB-Schema</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.ddb.contactID">DNB-Identifikationsnummer (ddb:contactID)</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.ddb.contactID.addinfo">Für den bisherigen Geschäftsgang wurde eine Identifikationsnummer der verbreitenden Stelle benötigt, die von der Deutschen Nationalbibliothek vergeben wurde. Diese Angabe ist für den neuen Geschäftsgang nicht mehr erforderlich. <message key="plugins.metadata.xmdp22.manager.settings.ddb.kind">DDB Access Rights</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.ddb.kind.required">Art der DNB-Zugriffsrechte (ddb:kind)</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.ddb.kind.required">Definition der Zugriffsrechte auf die archivierte Dokumentkopie bei der Deutschen Nationalbibliothek.</message>
+</locale>
