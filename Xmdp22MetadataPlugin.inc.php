@@ -58,26 +58,7 @@ class Xmdp22MetadataPlugin extends MetadataPlugin {
 	 * @see PKPPlugin::getManagementVerbs()
 	 */
 	function getManagementVerbs() {
-		if ($this->getEnabled()) {
-			$verbs = array(
-					array(
-							'disable',
-							__('manager.plugins.disable')
-					),
-					array(
-							'settings',
-							__('manager.plugins.settings')
-					)
-			);
-		} else {
-			$verbs = array(
-					array(
-							'enable',
-							__('manager.plugins.enable')
-					)
-			);
-		}
-		return $verbs;
+		return array(array('settings', __('manager.plugins.settings')));
 	}
 	
 	/**
@@ -108,20 +89,7 @@ class Xmdp22MetadataPlugin extends MetadataPlugin {
 		$request = $this->getRequest();
 		$templateManager = TemplateManager::getManager($request);
 		$templateManager->register_function('plugin_url', array(&$this, 'smartyPluginUrl'));
-		if (!$this->getEnabled() && $verb != 'enable') return false;
 		switch ($verb) {
-			case 'enable':
-				$this->setEnabled(true);
-				$message = NOTIFICATION_TYPE_PLUGIN_ENABLED;
-				$messageParams = array('pluginName' => $this->getDisplayName());
-				return false;
-	
-			case 'disable':
-				$this->setEnabled(false);
-				$message = NOTIFICATION_TYPE_PLUGIN_DISABLED;
-				$messageParams = array('pluginName' => $this->getDisplayName());
-				return false;
-	
 			case 'settings':
 				$press = $request->getPress();
 	
@@ -150,40 +118,6 @@ class Xmdp22MetadataPlugin extends MetadataPlugin {
 				assert(false);
 				return false;
 		}
-	}
-	
-	/**
-	 * Determine whether or not this plugin is enabled.
-	 * @return boolean
-	 */
-	function getEnabled($pressId = null) {
-		if (!$pressId) {
-			$request = $this->getRequest();
-			$router = $request->getRouter();
-			$press = $router->getContext($request);
-	
-			if (!$press) return false;
-			$pressId = $press->getid();
-		}
-		return $this->getSetting($pressId, 'enabled');
-	}
-	
-	/**
-	 * Set the enabled/disabled state of this plugin.
-	 * @param $enabled boolean
-	 */
-	function setEnabled($enabled) {
-		$request = $this->getRequest();
-		$press = $request->getPress();
-		if ($press) {
-			$this->updateSetting(
-					$press->getId(),
-					'enabled',
-					$enabled?true:false
-			);
-			return true;
-		}
-		return false;
 	}
 
 	/**
