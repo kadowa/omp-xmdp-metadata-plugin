@@ -86,8 +86,8 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			
 			$pc = new MetadataDescription('plugins.metadata.xmdp22.schema.Pc14NameSchema', ASSOC_TYPE_AUTHOR);
 			
- 			$this->_checkForContentAndAddElement($pc, 'pc:person/pc:name[@xsi:type="nameUsedByThePerson"]/pc:foreName', $author->getFirstName());
- 			$this->_checkForContentAndAddElement($pc, 'pc:person/pc:name[@xsi:type="nameUsedByThePerson"]/pc:surName', $author->getLastName());
+ 			$this->_checkForContentAndAddElement($pc, 'pc:person/pc:name[@type="nameUsedByThePerson"]/pc:foreName', $author->getFirstName());
+ 			$this->_checkForContentAndAddElement($pc, 'pc:person/pc:name[@type="nameUsedByThePerson"]/pc:surName', $author->getLastName());
 
  			$this->_checkForContentAndAddElement($description, 'dc:creator[@xsi:type="pc:MetaPers"]', $pc);
  		}
