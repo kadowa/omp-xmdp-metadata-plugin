@@ -18,6 +18,7 @@
 	<message key="plugins.metadata.xmdp22.description">Contributes XMetaDissPlus 2.2 schemas and application adapters.</message>
 	
 	<message key="plugins.metadata.xmdp22.manager.settings.description">This plugin generates meta-data in XMetaDissPlus 2.2 format from OMP publication formats. Required elements that cannot be mapped to OMP meta-data fields can be set here.</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.settingsUpdated">Settings Updated</message>
 	
 	<message key="plugins.metadata.xmdp22.manager.settings.contactId">DNB contact identification number</message>
 	

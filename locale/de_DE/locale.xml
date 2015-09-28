@@ -18,6 +18,7 @@
 	<message key="plugins.metadata.xmdp22.description">Definiert XMetaDissPlus 2.2-Schema und -Adapter.</message>
 	
 	<message key="plugins.metadata.xmdp22.manager.settings.description">Dieses Plugin generiert Metadaten im XMetaDissPlus 2.2-Format. Werte für Pflichtelemente, für die kein enstprechendes Metadatenfeld in OMP vorgesehen ist, können hier gesetzt werden.</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.settingsUpdated">Einstellungen aktualisiert</message>
 	
 	<message key="plugins.metadata.xmdp22.manager.settings.cc.settings">Ergänzende Felder für Corporate-Core-Schema</message>
 	<message key="plugins.metadata.xmdp22.manager.settings.cc.place">Verlagsort (cc:place)</message>	

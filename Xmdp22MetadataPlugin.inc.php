@@ -135,18 +135,11 @@ class Xmdp22MetadataPlugin extends MetadataPlugin {
 					if ($form->validate()) {
 						$form->execute();
 						$message = NOTIFICATION_TYPE_SUCCESS;
-						$messageParams = array('contents' => __('plugins.pubIds.doi.manager.settings.doiSettingsUpdated'));
+						$messageParams = array('contents' => __('plugins.metadata.xmdp22.manager.settings.settingsUpdated'));
 						return false;
 					} else {
 						$pluginModalContent = $form->fetch($request);
 					}
-				} elseif ($request->getUserVar('clearPubIds')) {
-					$form->readInputData();
-					$pressDao = DAORegistry::getDAO('PressDAO');
-					$pressDao->deleteAllPubIds($press->getId(), $this->getPubIdType());
-					$message = NOTIFICATION_TYPE_SUCCESS;
-					$messageParams = array('contents' => __('plugins.pubIds.doi.manager.settings.doiReassign.success'));
-					return false;
 				} else {
 					$form->initData();
 					$pluginModalContent = $form->fetch($request);
