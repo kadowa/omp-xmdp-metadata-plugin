@@ -124,7 +124,7 @@ class Xmdp22MetadataPlugin extends MetadataPlugin {
 	 * @see PubIdPlugin::getSettingsFormName()
 	 */
 	function getSettingsFormName() {
-		return 'form.XMDPSettingsForm';
+		return 'form.Xmdp22SettingsForm';
 	}
 	
 	/**

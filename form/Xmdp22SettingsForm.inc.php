@@ -12,10 +12,9 @@
  * @brief Form for press managers to setup DOI plugin
  */
 
-
 import('lib.pkp.classes.form.Form');
 
-class XMDPSettingsForm extends Form {
+class Xmdp22SettingsForm extends Form {
 
 	//
 	// Private properties
@@ -23,6 +22,14 @@ class XMDPSettingsForm extends Form {
 	/** @var integer */
 	var $_pressId;
 
+	/** @var array */
+	var $_ddbKindOptions = array(
+			"free" => "free",
+			"domain" => "domain",
+			"blocked" => "blocked",
+			"unkown" => "unknown"
+			);
+	
 	/**
 	 * Get the press ID.
 	 * @return integer
@@ -51,7 +58,7 @@ class XMDPSettingsForm extends Form {
 	 * @param $plugin DOIPubIdPlugin
 	 * @param $pressId integer
 	 */
-	function XMDPSettingsForm(&$plugin, $pressId) {
+	function Xmdp22SettingsForm(&$plugin, $pressId) {
 		$this->_pressId = $pressId;
 		$this->_plugin =& $plugin;
 		
@@ -78,13 +85,7 @@ class XMDPSettingsForm extends Form {
 		$pressId = $this->_getPressId();
 		$plugin =& $this->_getPlugin();
 		
-		$this->setData("ddbKindOptions", array(
-				"free" => "free", 
-				"domain" => "domain", 
-				"blocked" => "blocked", 
-				"unkown" => "unknown"
-				)
-		);
+		$this->setData("ddbKindOptions", $this->_ddbKindOptions);
 		
 		foreach($this->_getFormFields() as $fieldName => $fieldType) {
 			$this->setData($fieldName, $plugin->getSetting($pressId, $fieldName));
@@ -109,7 +110,16 @@ class XMDPSettingsForm extends Form {
 		}
 	}
 
-
+	/**
+	 * @see Form::validate()
+	 */
+	function validate() {
+		// There is probably a better way to add these options to the template.
+		$this->setData("ddbKindOptions", $this->_ddbKindOptions);
+	
+		return parent::validate();
+	}
+	
 	//
 	// Private helper methods
 	//
