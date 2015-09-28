@@ -194,13 +194,13 @@ class Xmdp22MetadataPlugin extends MetadataPlugin {
 	}
 	
 	/**
-	 * @see PubIdPlugin::verifyData()
+	 * Access settings.
+	 * @param string $fieldName
+	 * @param int $pressId
 	 */
-	function verifyData($fieldName, $fieldValue, &$pubObject, $pressId, &$errorMsg) {
-		$place = $this->getSetting($pressId, 'cc:place');
-		$address = $this->getSetting($pressId, 'cc:address');
-
-		return true;
+	function getData($fieldName, $pressId) {
+		$fieldName = str_replace(":", "_", $fieldName);
+		return $this->getSetting($pressId, $fieldName);
 	}
 }
 

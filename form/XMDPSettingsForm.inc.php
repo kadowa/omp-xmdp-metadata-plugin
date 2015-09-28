@@ -57,12 +57,12 @@ class XMDPSettingsForm extends Form {
 		
 		parent::Form($plugin->getTemplatePath() . 'settingsForm.tpl');
 
-//		$this->addCheck(new FormValidatorRegExp($this, 'doiPrefix', 'required', 'plugins.pubIds.doi.manager.settings.doiPrefixPattern', '/^10\.[0-9][0-9][0-9][0-9][0-9]?$/'));
-//		$this->addCheck(new FormValidatorCustom($this, 'doiPublicationFormatSuffixPattern', 'required', 'plugins.pubIds.doi.manager.settings.doiPublicationFormatSuffixPatternRequired', create_function('$doiPublicationFormatSuffixPattern,$form', 'if ($form->getData(\'doiSuffix\') == \'pattern\') return $doiPublicationFormatSuffixPattern != \'\';return true;'), array(&$this)));
-//		$this->addCheck(new FormValidator($this, 'doiSuffix' ,'required', 'plugins.pubIds.doi.manager.settings.doiSuffixRequired'));
-//		$this->addCheck(new FormValidator($this, 'cc:place' ,'required', 'plugins.metadata.xmdp22.manager.settings.place.required'));
-//		$this->addCheck(new FormValidator($this, 'cc:address' ,'required', 'plugins.metadata.xmdp22.manager.settings.place.required'));
-//		$this->addCheck(new FormValidatorPost($this));
+		$this->addCheck(new FormValidator($this, 'cc_place' ,'required', 'plugins.metadata.xmdp22.manager.settings.cc.place.required'));
+		$this->addCheck(new FormValidator($this, 'cc_address' ,'required', 'plugins.metadata.xmdp22.manager.settings.cc.address.required'));
+		$this->addCheck(new FormValidatorRegExp($this, 'ddb_contactID', 'optional', 'plugins.metadata.xmdp22.manager.settings.ddb.contactID.pattern', '/^F[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]$/'));
+		$this->addCheck(new FormValidator($this, 'ddb_kind' ,'required', 'plugins.metadata.xmdp22.manager.settings.ddb.kind.required'));
+
+		$this->addCheck(new FormValidatorPost($this));
 
 		$this->setData('pluginName', $plugin->getName());
 	}

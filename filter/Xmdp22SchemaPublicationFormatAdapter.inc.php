@@ -112,15 +112,25 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			$publishers = $press->getName(null); // Default
 		}
 		
-		// Publisher
+		// Corporate Core Institution Schema
 		// Since composite elements cannot be localized, this element's content is based on the primary press locale
-		// FIXME: Address and place are obligatory schema elements, but not obligatory in OMP.
-		// FIXME: cc:place has no corresponding metadata field in OMP.
-		// FIXME: Make sure that address cannot be localized.
 		$cc = new MetadataDescription('plugins.metadata.xmdp22.schema.CC21InstitutionSchema', ASSOC_TYPE_PRESS);
+		
+		// Name
 		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:name', $press->getName()[$press->getPrimaryLocale()]);
-		$this->_checkForContentAndAddElement($cc, 'cc:universityOrInstitution/cc:place', $press->getData("mailingAddress"));
-		$this->_checkForContentAndAddElement($cc, 'cc:address', $press->getData("mailingAddress"));
+		
+		// Address
+		$metadataPlugins = PluginRegistry::loadCategory('metadata', true);
+		$address = $press->getData("mailingAddress");
+		if ( !$address) {
+			$address = $metadataPlugins['Xmdp22MetadataPlugin']->getData("cc:address", $monograph->getPressId());
+		}
+		$cc->addStatement('cc:address', $address);
+		
+		// Place
+		$place = $address;
+		$place = $metadataPlugins['Xmdp22MetadataPlugin']->getData("cc:place", $monograph->getPressId());
+		$cc->addStatement('cc:universityOrInstitution/cc:place', $place);
 		
 		$this->_checkForContentAndAddElement($description, 'dc:publisher[@xsi:type="cc:Publisher"]', $cc);
 		
@@ -174,7 +184,6 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		$this->_addLocalizedElements($description, 'dc:source', $sources);
 		
 		// Language
-		// TODO: make language obligatory
 		$language = $monograph->getLanguage();
 		if (!$language) {
 			$language = AppLocale::get3LetterFrom2LetterIsoLanguage(substr($press->getPrimaryLocale(), 0, 2));
@@ -235,16 +244,14 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		}
 		
 		// Contact ID
-		// TODO: make configurable via settings
-		$contactId = 'F6000-0201';
+		$contactId = $metadataPlugins['Xmdp22MetadataPlugin']->getData("ddb:contactID", $monograph->getPressId());
 		$description->addStatement('ddb:contact', '[@ddb:contactID="' . $contactId .'"]');
 		
 		// Additional identifiers
 		$this->_checkForContentAndAddElement($description, 'ddb:identifier[@ddb:type="URL"]', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())));
 		
 		// Rights
-		// TODO: make configurable via settings
-		$kind = 'free';
+		$kind = $metadataPlugins['Xmdp22MetadataPlugin']->getData("ddb:kind", $monograph->getPressId());
 		$description->addStatement('ddb:rights', '[@ddb:kind="' . $kind . '"]');
 		
 		Hookregistry::call('Xmdp22SchemaPublicationFormatAdapter::extractMetadataFromDataObject', array(&$this, $monograph, $press, &$description));

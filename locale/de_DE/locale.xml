@@ -28,7 +28,8 @@
 
 	<message key="plugins.metadata.xmdp22.manager.settings.ddb.settings">Ergänzende Felder für DNB-Schema</message>
 	<message key="plugins.metadata.xmdp22.manager.settings.ddb.contactID">DNB-Identifikationsnummer (ddb:contactID)</message>
-	<message key="plugins.metadata.xmdp22.manager.settings.ddb.contactID.addinfo">Für den bisherigen Geschäftsgang wurde eine Identifikationsnummer der verbreitenden Stelle benötigt, die von der Deutschen Nationalbibliothek vergeben wurde. Diese Angabe ist für den neuen Geschäftsgang nicht mehr erforderlich. <message key="plugins.metadata.xmdp22.manager.settings.ddb.kind">DDB Access Rights</message>
-	<message key="plugins.metadata.xmdp22.manager.settings.ddb.kind.required">Art der DNB-Zugriffsrechte (ddb:kind)</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.ddb.contactID.addinfo">Für den bisherigen Geschäftsgang wurde eine Identifikationsnummer der verbreitenden Stelle benötigt, die von der Deutschen Nationalbibliothek vergeben wurde. Diese Angabe ist für den neuen Geschäftsgang nicht mehr erforderlich. 
+	<message key="plugins.metadata.xmdp22.manager.settings.ddb.contactID.pattern">Ungültige Identifikationsnummer (muss der Form Fxxxx-xxxx, wobei x aus [0-9], entsprechen, z.B. F1234-5678).</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.ddb.kind">Art der DNB-Zugriffsrechte (ddb:kind)</message>
 	<message key="plugins.metadata.xmdp22.manager.settings.ddb.kind.required">Definition der Zugriffsrechte auf die archivierte Dokumentkopie bei der Deutschen Nationalbibliothek.</message>
 </locale>
