@@ -166,7 +166,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		
 		// Identifier: DOI
 		$pubIdPlugins = PluginRegistry::loadCategory('pubIds', true);
-		if ( array_key_exists('DOIPubIdPlugin', $pubIdPlugins) ) {
+		if ( isset($pubIdPlugins) && array_key_exists('DOIPubIdPlugin', $pubIdPlugins) ) {
 			$doi = $pubIdPlugins['DOIPubIdPlugin']->getPubId($publicationFormat);
 		//	if (is_a($monograph, 'PublishedMonograph')) {
 			$description->addStatement('dc:identifier[@xsi:type="doi"]', $doi);
