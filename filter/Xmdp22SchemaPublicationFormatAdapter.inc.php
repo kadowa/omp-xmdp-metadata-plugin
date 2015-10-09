@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file plugins/metadata/dc11/filter/Xmdp22SchemaPublicationFormatAdapter.inc.php
+ * @file plugins/metadata/xmdp22/filter/Xmdp22SchemaPublicationFormatAdapter.inc.php
  *
  * Copyright (c) 2014-2015 Simon Fraser University Library
  * Copyright (c) 2000-2015 John Willinsky
@@ -82,8 +82,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		// Creator
 		
  		$authors = $monograph->getAuthors();
- 		foreach($authors as $author) {
-			
+ 		foreach($authors as $author) {		
 			$pc = new MetadataDescription('plugins.metadata.xmdp22.schema.Pc14NameSchema', ASSOC_TYPE_AUTHOR);
 			
  			$this->_checkForContentAndAddElement($pc, 'pc:person/pc:name[@type="nameUsedByThePerson"]/pc:foreName', $author->getFirstName());
@@ -113,7 +112,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		}
 		
 		// Corporate Core Institution Schema
-		// Since composite elements cannot be localized, this element's content is based on the primary press locale
+		// Since composite elements cannot be localized, the content of this element is based on the primary press locale
 		$cc = new MetadataDescription('plugins.metadata.xmdp22.schema.CC21InstitutionSchema', ASSOC_TYPE_PRESS);
 		
 		// Name
@@ -164,14 +163,29 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			$this->_checkForContentAndAddElement($description, 'dc:format', $formatName);
 		}
 		
-		// Identifier: DOI
+		// Identifier(s)
+		// dc:identifier: xsi:type=urn:nbn|doi|hdl (1, mandatory)
+		// ddb:identifier: ddb:type=URL|URN|DOI|handle|VG-Wort-Pixel|URL_Frontdoor|URL_Publikation|Erstkat-ID|ISSN|other (many, optional)
 		$pubIdPlugins = PluginRegistry::loadCategory('pubIds', true);
 		if ( isset($pubIdPlugins) && array_key_exists('DOIPubIdPlugin', $pubIdPlugins) ) {
 			$doi = $pubIdPlugins['DOIPubIdPlugin']->getPubId($publicationFormat);
-		//	if (is_a($monograph, 'PublishedMonograph')) {
-			$description->addStatement('dc:identifier[@xsi:type="doi"]', $doi);
-		//	}
 		}
+		
+		if ( isset($pubIdPlugins) && array_key_exists('URNPubIdPlugin', $pubIdPlugins) ) {
+			$urn_dnb = $pubIdPlugins['URNPubIdPlugin']->getPubId($monograph);
+		}
+		
+		if (is_a($monograph, 'PublishedMonograph')) {
+			if ( isset($urn_dnb) ) {
+				$description->addStatement('dc:identifier', $urn_dnb . ' [@xsi:type="urn:nbn"]');
+				if ( isset($doi) ) {
+					$description->addStatement('ddb:identifier', $doi . ' [@ddb:type="DOI"]');
+				}
+			} else if ( isset($doi) ) {
+				$description->addStatement('dc:identifier', $doi . ' [@xsi:type="doi"]');
+			}
+		}
+		$this->_checkForContentAndAddElement($description, 'ddb:identifier', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())) . ' [@ddb:type="URL_Frontdoor"]');
 		
 		// Source (press title and pages)
 		$sources = $press->getName(null);
@@ -246,9 +260,6 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		// Contact ID
 		$contactId = $metadataPlugins['Xmdp22MetadataPlugin']->getData("ddb:contactID", $monograph->getPressId());
 		$description->addStatement('ddb:contact', '[@ddb:contactID="' . $contactId .'"]');
-		
-		// Additional identifiers
-		$this->_checkForContentAndAddElement($description, 'ddb:identifier[@ddb:type="URL"]', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())));
 		
 		// Rights
 		$kind = $metadataPlugins['Xmdp22MetadataPlugin']->getData("ddb:kind", $monograph->getPressId());
