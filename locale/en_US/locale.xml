@@ -20,8 +20,6 @@
 	<message key="plugins.metadata.xmdp22.manager.settings.description">This plugin generates meta-data in XMetaDissPlus 2.2 format from OMP publication formats. Required elements that cannot be mapped to OMP meta-data fields can be set here.</message>
 	<message key="plugins.metadata.xmdp22.manager.settings.settingsUpdated">Settings Updated</message>
 	
-	<message key="plugins.metadata.xmdp22.manager.settings.contactId">DNB contact identification number</message>
-	
 	<message key="plugins.metadata.xmdp22.manager.settings.cc.settings">Corporate Core Schema Supplementary Fields</message>
 	<message key="plugins.metadata.xmdp22.manager.settings.cc.place">Publisher Place</message>	
 	<message key="plugins.metadata.xmdp22.manager.settings.cc.place.required">The place of the publishing organization (e.g. Heidelberg) is a mandatory field in the Corporate Core Schema.</message>

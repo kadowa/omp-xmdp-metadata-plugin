@@ -1,10 +1,11 @@
 {**
  * plugins/metadata/xmdp22/templates/settingsForm.tpl
  *
- * Copyright (c) 2015 Heidelberg University
+ * Copyright (c) 2014-2015 Simon Fraser University Library
+ * Copyright (c) 2003-2015 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
- * DOI plugin settings
+ * XMetaDissPlus plugin settings
  *
  *}
 <div id="description">{translate key="plugins.metadata.xmdp22.manager.settings.description"}</div>
