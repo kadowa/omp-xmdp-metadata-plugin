@@ -318,14 +318,14 @@ class Xmdp22DescriptionXmlFilter extends PersistableFilter {
 		// and add them to regular attributes
 		$attributeOffset = strpos($value, '[@');
 		if ($attributeOffset !== false) {
-			// no static attributes
+			// no configurable attributes
 			if (count($elementPlusAttributes) < 2) {
 				$elementPlusAttributes[] = '';
 			}
 			
 			if ($attributeOffset !== 0) {
-				$value = substr($value, 0, $attributeOffset);
 				$elementPlusAttributes[1] = rtrim($elementPlusAttributes[1], ']') . ltrim(substr($value, $attributeOffset), '[');
+				$value = substr($value, 0, $attributeOffset);
 			}
 			else {
 				$elementPlusAttributes[1] = rtrim($elementPlusAttributes[1], ']') . ltrim(substr($value, $attributeOffset), '[');
