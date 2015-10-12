@@ -32,4 +32,7 @@
 	<message key="plugins.metadata.xmdp22.manager.settings.ddb.contactID.pattern">Invalid identification number.</message>
 	<message key="plugins.metadata.xmdp22.manager.settings.ddb.kind">DDB Access Rights</message>
 	<message key="plugins.metadata.xmdp22.manager.settings.ddb.kind.required">Mandatory definition of DNB access rights for archived copies.</message>
+	
+	<message key="plugins.metadata.xmdp22.manager.settings.transfer.settings">File Transfer Settings</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.transfer.genre">Select a genre to determine which submission file is transfered via XMetaDissPlus. If several files of the same genre are available for a publication format, the first entry is transfered by default.</message>
 </locale>

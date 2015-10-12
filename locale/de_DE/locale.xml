@@ -32,4 +32,7 @@
 	<message key="plugins.metadata.xmdp22.manager.settings.ddb.contactID.pattern">Ungültige Identifikationsnummer (muss der Form Fxxxx-xxxx, wobei x aus [0-9], entsprechen, z.B. F1234-5678).</message>
 	<message key="plugins.metadata.xmdp22.manager.settings.ddb.kind">Art der DNB-Zugriffsrechte (ddb:kind)</message>
 	<message key="plugins.metadata.xmdp22.manager.settings.ddb.kind.required">Definition der Zugriffsrechte auf die archivierte Dokumentkopie bei der Deutschen Nationalbibliothek.</message>
+	
+<message key="plugins.metadata.xmdp22.manager.settings.transfer.settings">Dateitransfer</message>
+	<message key="plugins.metadata.xmdp22.manager.settings.transfer.genre">Um festzulegen, welcher Dateityp mit XMetaDissPlus übertragen wird, kann ein Genre ausgwählt werden. Falls mehrere Dateien für dasselbe Genre vorliegen, wird standardmäßig der erste Datenbankeintrag übertragen.</message>
 </locale>

@@ -66,13 +66,15 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		AppLocale::requireComponents(LOCALE_COMPONENT_APP_COMMON);
 
 		// Retrieve data that belongs to the publication format.
-		$oaiDao = DAORegistry::getDAO('OAIDAO'); /* @var $oaiDao OAIDAO */
+		$oaiDao = DAORegistry::getDAO('OAIDAO');
 		$publishedMonographDao = DAORegistry::getDAO('PublishedMonographDAO');
-		$chapterDao = DAORegistry::getDAO('ChapterDAO');
+		
 		$monograph = $publishedMonographDao->getById($publicationFormat->getMonographId());
-		$chapters = $chapterDao->getChapters($monograph->getId());
 		$series = $oaiDao->getSeries($monograph->getSeriesId()); /* @var $series Series */
 		$press = $oaiDao->getPress($monograph->getPressId());
+		
+		$chapterDao = DAORegistry::getDAO('ChapterDAO');
+		$chapters = $chapterDao->getChapters($monograph->getId());
 		
 		$description = $this->instantiateMetadataDescription();
 
@@ -80,7 +82,6 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		$this->_addLocalizedElements($description, 'dc:title[@xsi:type="ddb:titleISO639-2"]', $monograph->getTitle(null));
 		
 		// Creator
-		
  		$authors = $monograph->getAuthors();
  		foreach($authors as $author) {		
 			$pc = new MetadataDescription('plugins.metadata.xmdp22.schema.Pc14NameSchema', ASSOC_TYPE_AUTHOR);
@@ -111,7 +112,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			$publishers = $press->getName(null); // Default
 		}
 		
-		// Corporate Core Institution Schema
+		// Corporate Core Institution Schema		
 		// Since composite elements cannot be localized, the content of this element is based on the primary press locale
 		$cc = new MetadataDescription('plugins.metadata.xmdp22.schema.CC21InstitutionSchema', ASSOC_TYPE_PRESS);
 		
@@ -221,45 +222,59 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			$this->_checkForContentAndAddElement($description, 'dc:rights', $salesRight->getNameForONIXCode());
 		}
 
-		// File stuff
-		// TODO: container / select full document
+		// File transfer		
+		// Per default, only the full manuscript or a file of a custom genre 
+		// (set via settings form) is transferred. If several files of the same
+		// genre are found for one publication format, the first is selected as
+		// the transfer file per default.
+		// Alternative configurations (e.g. container formats) are thinkable, but not implemented.
   		$submissionFileDao = DAORegistry::getDAO('SubmissionFileDAO');
+  		
  		$availableFiles = array_filter(
  				$submissionFileDao->getLatestRevisions($monograph->getId()),
  				create_function('$a', 'return $a->getViewable() && $a->getDirectSalesPrice() !== null && $a->getAssocType() == ASSOC_TYPE_PUBLICATION_FORMAT;')
  		);
+ 		
+ 		$genreDao = DAORegistry::getDAO('GenreDAO');
+ 		$genreId = $metadataPlugins['Xmdp22MetadataPlugin']->getData("genre:id", $monograph->getPressId());
+ 		if ( !isset($genreId) ) {
+ 			// if genre is not set, try to make monograph default
+ 			// -- this fails if the press uses custom components and the default components
+ 			// have been deleted
+ 			$genreId = $genreDao->getByKey('MANUSCRIPT', $press->getId())->getId();
+ 			if ( isset($genreId) ) {
+ 				$metadataPlugins['Xmdp22MetadataPlugin']->updateSetting($monograph->getPressId(), "genre_id", $genreId);
+ 			}
+ 		}
 
- 		$files = array();
+ 		$transferableFiles = array();
  		foreach ($availableFiles as $availableFile) {
- 			if ($availableFile->getAssocId() == $publicationFormat->getId()) {
- 				// Collect all files that belong to this publication format
- 				$files[] = $availableFile;
+ 			if ( ($availableFile->getAssocId() == $publicationFormat->getId()) && ($availableFile->getGenreId() == $genreId) ) {
+ 				// Collect all files that belong to this publication format and have the selected genre
+ 				$transferableFiles[] = $availableFile;
  			};
  		};
 		
- 		// FIXME: use first file as default for prototype
- 		if ( $files ) {
- 			$transferFile = $files[0];
- 			$files = array( $transferFile );
- 		}
+ 		// first file that fits criteria is transfered per default
+ 		// -- another solution would be to place all files in a container here
+ 		if ( $transferableFiles ) {
+ 			$transferFile = $transferableFiles[0];
+ 			$transferableFiles = array( $transferFile );
+ 		}	
+
+ 		// Number of files (will always be 1, unless a container solution is implemented)
+ 		$this->_checkForContentAndAddElement($description, 'ddb:fileNumber', sizeof($transferableFiles));
 		
-		// Number of files in container
-		$this->_checkForContentAndAddElement($description, 'ddb:fileNumber', sizeof($files));
-		
-		// File Properties
-		foreach ($files as $file) {
-			$description->addStatement('ddb:fileProperties', '[@ddb:fileName="'.$availableFile->getServerFileName().'" @ddbfileSize="'.$availableFile->getFileSize().'"]');
-		};
-		
-		// Transfer
+		// File Properties and Transfer link
 		if ( isset($transferFile) ) {
-			$this->_checkForContentAndAddElement($description, 'ddb:transfer[@ddb:type="dcterms:URI"]', Request::url($press->getPath(),
+			$description->addStatement('ddb:fileProperties', '[@ddb:fileName="' . $transferFile->getServerFileName() . '" @ddbfileSize="' . $transferFile->getFileSize().'"]');
+			$description->addStatement('ddb:transfer[@ddb:type="dcterms:URI"]', Request::url($press->getPath(),
 					'catalog', 'download', array($monograph->getId(), $publicationFormat->getId(), $transferFile->getFileIdAndRevision())));
-		}
+		};
 		
 		// Contact ID
 		$contactId = $metadataPlugins['Xmdp22MetadataPlugin']->getData("ddb:contactID", $monograph->getPressId());
-		$description->addStatement('ddb:contact', '[@ddb:contactID="' . $contactId .'"]');
+		$this->_checkForContentAndAddElement($description, 'ddb:contact', '[@ddb:contactID="' . $contactId .'"]');
 		
 		// Rights
 		$kind = $metadataPlugins['Xmdp22MetadataPlugin']->getData("ddb:kind", $monograph->getPressId());

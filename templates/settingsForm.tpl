@@ -38,6 +38,12 @@
 			{fbvElement type="select" label="plugins.metadata.xmdp22.manager.settings.ddb.kind.required" name="ddb_kind" required=true id="ddb_kind" from=$ddbKindOptions selected=$ddb_kind translate=false size=$fbvStyles.size.MEDIUM}
 		{/fbvFormSection}
 	{/fbvFormArea}
+	{fbvFormArea id="ddbFormArea" class="border" title="plugins.metadata.xmdp22.manager.settings.transfer.settings"}
+		{fbvFormSection}
+			<p class="pkp_help">{translate key="plugins.metadata.xmdp22.manager.settings.transfer.genre"}</p>
+			{fbvElement type="select" label="" name="genre_id" required=false id="genre_id" from=$genres selected=$genre_id translate=false size=$fbvStyles.size.MEDIUM}
+		{/fbvFormSection}
+	{/fbvFormArea}
 	{fbvFormButtons submitText="common.save"}
 </form>
 <p><span class="formRequired">{translate key="common.requiredField"}</span></p>

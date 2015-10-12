@@ -30,14 +30,6 @@ class Xmdp22SettingsForm extends Form {
 			"unkown" => "unknown"
 			);
 	
-	/**
-	 * Get the press ID.
-	 * @return integer
-	 */
-	function _getPressId() {
-		return $this->_pressId;
-	}
-
 	/** @var Xmdp22MetadataPlugin */
 	var $_plugin;
 
@@ -68,6 +60,18 @@ class Xmdp22SettingsForm extends Form {
 		$this->addCheck(new FormValidator($this, 'cc_address' ,'required', 'plugins.metadata.xmdp22.manager.settings.cc.address.required'));
 		$this->addCheck(new FormValidatorRegExp($this, 'ddb_contactID', 'optional', 'plugins.metadata.xmdp22.manager.settings.ddb.contactID.pattern', '/^F[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]$/'));
 		$this->addCheck(new FormValidator($this, 'ddb_kind' ,'required', 'plugins.metadata.xmdp22.manager.settings.ddb.kind.required'));
+		// Add an additional check for the genre to the form.
+		$this->addCheck(
+				new FormValidatorCustom(
+						$this, 'genre_id', 'optional',
+						'plugins.metadata.xmdp22.manager.settings.transfer.genre.id',
+						create_function(
+								'$genreId, $genreDao, $contextId',
+								'return is_a($genreDao->getById($genreId, $contextId), "Genre");'
+						),
+						array(DAORegistry::getDAO('GenreDAO'), $pressId)
+				)
+		);
 
 		$this->addCheck(new FormValidatorPost($this));
 
@@ -86,6 +90,7 @@ class Xmdp22SettingsForm extends Form {
 		$plugin =& $this->_getPlugin();
 		
 		$this->setData("ddbKindOptions", $this->_ddbKindOptions);
+		$this->setData("genres", $this->_retrieveGenreList($pressId));
 		
 		foreach($this->_getFormFields() as $fieldName => $fieldType) {
 			$this->setData($fieldName, $plugin->getSetting($pressId, $fieldName));
@@ -129,7 +134,29 @@ class Xmdp22SettingsForm extends Form {
 			'cc_address' => 'string',
 			'ddb_contactID' => 'string',
 			'ddb_kind' => 'string',
+			'genre_id' => 'string',
 		);
+	}
+	
+	/**
+	 * Get the press ID.
+	 * @return integer
+	 */
+	function _getPressId() {
+		return $this->_pressId;
+	}
+	
+
+	function _retrieveGenreList($contextId) {
+		$genreDao = DAORegistry::getDAO('GenreDAO'); /* @var $genreDao GenreDAO */
+		$genres = $genreDao->getEnabledByContextId($contextId);
+	
+		// Transform the genres into an array
+		$genreList = array();
+		while ($genre = $genres->next()) {
+			$genreList[$genre->getId()] = $genre->getLocalizedName();
+		}
+		return $genreList;
 	}
 }
 
