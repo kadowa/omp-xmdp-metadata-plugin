@@ -68,6 +68,7 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		// Retrieve data that belongs to the publication format.
 		$oaiDao = DAORegistry::getDAO('OAIDAO');
 		$publishedMonographDao = DAORegistry::getDAO('PublishedMonographDAO');
+		$monographDao = DAORegistry::getDAO('MonographDAO');
 		
 		$monograph = $publishedMonographDao->getById($publicationFormat->getMonographId());
 		$series = $oaiDao->getSeries($monograph->getSeriesId()); /* @var $series Series */
@@ -176,15 +177,13 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			$urn_dnb = $pubIdPlugins['URNPubIdPlugin']->getPubId($monograph);
 		}
 		
-		if (is_a($monograph, 'PublishedMonograph')) {
-			if ( isset($urn_dnb) ) {
-				$description->addStatement('dc:identifier', $urn_dnb . ' [@xsi:type="urn:nbn"]');
-				if ( isset($doi) ) {
-					$description->addStatement('ddb:identifier', $doi . ' [@ddb:type="DOI"]');
-				}
-			} else if ( isset($doi) ) {
-				$description->addStatement('dc:identifier', $doi . ' [@xsi:type="doi"]');
+		if ( isset($urn_dnb) ) {
+			$description->addStatement('dc:identifier', $urn_dnb . ' [@xsi:type="urn:nbn"]');
+			if ( isset($doi) ) {
+				$description->addStatement('ddb:identifier', $doi . ' [@ddb:type="DOI"]');
 			}
+		} else if ( isset($doi) ) {
+			$description->addStatement('dc:identifier', $doi . ' [@xsi:type="doi"]');
 		}
 		$this->_checkForContentAndAddElement($description, 'ddb:identifier', Request::url($press->getPath(), 'catalog', 'book', array($monograph->getId())) . ' [@ddb:type="URL_Frontdoor"]');
 		
