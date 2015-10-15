@@ -119,8 +119,11 @@ class Xmdp22SettingsForm extends Form {
 	 * @see Form::validate()
 	 */
 	function validate() {
-		// There is probably a better way to add these options to the template.
+		// FIXME: There is probably a better way to add these options to the template.
+		$pressId = $this->_getPressId();
+		
 		$this->setData("ddbKindOptions", $this->_ddbKindOptions);
+		$this->setData("genres", $this->_retrieveGenreList($pressId));
 	
 		return parent::validate();
 	}
