@@ -173,8 +173,8 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 			$doi = $pubIdPlugins['DOIPubIdPlugin']->getPubId($publicationFormat);
 		}
 		
-		if ( isset($pubIdPlugins) && array_key_exists('URNPubIdPlugin', $pubIdPlugins) ) {
-			$urn_dnb = $pubIdPlugins['URNPubIdPlugin']->getPubId($monograph);
+		if ( isset($pubIdPlugins) && array_key_exists('URNDNBPubIdPlugin', $pubIdPlugins) ) {
+			$urn_dnb = $pubIdPlugins['URNDNBPubIdPlugin']->getPubId($monograph);
 		}
 		
 		if ( isset($urn_dnb) ) {
