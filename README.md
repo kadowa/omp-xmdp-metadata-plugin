@@ -1,6 +1,6 @@
 # XMetaDissPlus Metadata Plugin
 
-> The XMetaDissPlus Metadata plugin for OMP has been developed at UB Heidelberg. It provides a filter to transform an OMP publication format into an [XMetaDissPlus][xmetadissplus] XML record. The [XMetaDissPlus 2.2.][xmetadissplus22] format has been defined by the [Deutsche Nationalbibliothek][dnb] (DNB).
+> The XMetaDissPlus Metadata plugin for [Open Monograph Press][omp] (OMP) has been developed at UB Heidelberg. It provides a filter to transform an OMP publication format into an [XMetaDissPlus][xmetadissplus] XML record. The [XMetaDissPlus 2.2.][xmetadissplus22] format has been defined by the [Deutsche Nationalbibliothek][dnb] (DNB).
 
 ## Requirements
 
