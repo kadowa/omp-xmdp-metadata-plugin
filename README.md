@@ -8,12 +8,12 @@
 
 ## Installation
 
-	git clone https://github.com/kadowa/omp-xmdp-metadata-plugin omp/plugins/metadata/xmdp22
+	git clone https://github.com/ub-heidelberg/xmdp22 omp/plugins/metadata/
 	php omp/tools/upgrade.php upgrade
 
 ## Bugs / Issues
 
-You can report issues here: <https://github.com/kadowa/omp-xmdp-metadata-plugin/issues>
+You can report issues here: <https://github.com/ub-heidelberg/xmdp22/issues>
 
 ## License
 
@@ -24,7 +24,7 @@ See the [COPYING][gpl-licence] included with OMP for the terms of this license.
 [pkp]: http://pkp.sfu.ca/
 [xmetadissplus]: http://www.dnb.de/DE/Standardisierung/Metadaten/xMetadissPlus.html
 [xmetadissplus22]: http://nbn-resolving.de/urn:nbn:de:101-2010052704
-[urn_dnb]: https://github.com/kadowa/omp-dnb-urn-plugin
+[urn_dnb]: https://github.com/ub-heidelberg/urn_dnb
 [dnb]: http://www.dnb.de
 [gpl-licence]: https://github.com/pkp/omp/blob/master/docs/COPYING
 
