@@ -8,7 +8,7 @@
 
 ## Installation
 
-	git clone https://github.com/ub-heidelberg/xmdp22 omp/plugins/metadata/
+	git clone https://github.com/ub-heidelberg/xmdp22 /path/to/your/omp/plugins/metadata/
 	php omp/tools/upgrade.php upgrade
 
 ## Bugs / Issues
