@@ -16,7 +16,7 @@
 		$('#xmdpSettingsForm').pkpHandler('$.pkp.controllers.form.AjaxFormHandler');
 	{rdelim});
 </script>
-<form class="pkp_form" id="xmdpSettingsForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT op="plugin" category="metadata" plugin=$pluginName verb="settings" save="true"}">
+<form class="pkp_form" id="xmdpSettingsForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="metadata" plugin=$pluginName verb="settings" save="true"}">
 	{include file="common/formErrors.tpl"}
 	{fbvFormArea id="ccFormArea" class="border" title="plugins.metadata.xmdp22.manager.settings.cc.settings"}
 		{fbvFormSection}

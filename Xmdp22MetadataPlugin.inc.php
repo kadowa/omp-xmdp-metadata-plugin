@@ -61,65 +61,53 @@ class Xmdp22MetadataPlugin extends MetadataPlugin {
 		return array(array('settings', __('manager.plugins.settings')));
 	}
 	
-	/**
-	 * Define management link actions for the settings verb.
-	 * @return LinkAction
-	 */
-	function getManagementVerbLinkAction($request, $verb) {
+	function getActions($request, $actionArgs) {
 		$router = $request->getRouter();
-	
-		list($verbName, $verbLocalized) = $verb;
-	
-		if ($verbName === 'settings') {
-			import('lib.pkp.classes.linkAction.request.AjaxLegacyPluginModal');
-			$actionRequest = new AjaxLegacyPluginModal(
-					$router->url($request, null, null, 'plugin', null, array('verb' => 'settings', 'plugin' => $this->getName(), 'category' => 'metadata')),
-					$this->getDisplayName()
-			);
-			return new LinkAction($verbName, $actionRequest, $verbLocalized, null);
-		}
-	
-		return null;
+		import('lib.pkp.classes.linkAction.request.AjaxModal');
+		return array_merge(
+				$this->getEnabled()?array(
+						new LinkAction(
+								'settings',
+								new AjaxModal(
+										$router->url($request, null, null, 'manage', null, $actionArgs),
+										$this->getDisplayName()
+								),
+								__('manager.plugins.settings'),
+								null
+						),
+				):array(),
+				parent::getActions($request, $actionArgs)
+		);
 	}
 	
 	/**
-	 * @see PKPPlugin::manage()
+	 * @copydoc PKPPlugin::manage()
 	 */
-	function manage($verb, $args, &$message, &$messageParams, &$pluginModalContent = null) {
-		$request = $this->getRequest();
-		$templateManager = TemplateManager::getManager($request);
-		$templateManager->register_function('plugin_url', array(&$this, 'smartyPluginUrl'));
-		switch ($verb) {
-			case 'settings':
-				$press = $request->getPress();
+	function manage($args, $request) {
+		$notificationManager = new NotificationManager();
+		$user = $request->getUser();
+		$press = $request->getPress();
 	
-				$settingsFormName = $this->getSettingsFormName();
-				$settingsFormNameParts = explode('.', $settingsFormName);
-				$settingsFormClassName = array_pop($settingsFormNameParts);
-				$this->import($settingsFormName);
-				$form = new $settingsFormClassName($this, $press->getId());
-				if ($request->getUserVar('save')) {
-					$form->readInputData();
-					if ($form->validate()) {
-						$form->execute();
-						$message = NOTIFICATION_TYPE_SUCCESS;
-						$messageParams = array('contents' => __('plugins.metadata.xmdp22.manager.settings.settingsUpdated'));
-						return false;
-					} else {
-						$pluginModalContent = $form->fetch($request);
-					}
-				} else {
-					$form->initData();
-					$pluginModalContent = $form->fetch($request);
-				}
-				return false;
-			default:
-				// Unknown management verb
-				assert(false);
-				return false;
+		$settingsFormName = $this->getSettingsFormName();
+		$settingsFormNameParts = explode('.', $settingsFormName);
+		$settingsFormClassName = array_pop($settingsFormNameParts);
+		$this->import($settingsFormName);
+		$form = new $settingsFormClassName($this, $press->getId());
+		if ($request->getUserVar('save')) {
+			$form->readInputData();
+			if ($form->validate()) {
+				$form->execute();
+				$notificationManager->createTrivialNotification($user->getId(), NOTIFICATION_TYPE_SUCCESS);
+				return new JSONMessage(true);
+			} else {
+				return new JSONMessage(true, $form->fetch($request));
+			}
+		} else {
+			$form->initData();
+			return new JSONMessage(true, $form->fetch($request));
 		}
 	}
-
+	
 	/**
 	 * @see PubIdPlugin::getSettingsFormName()
 	 */
