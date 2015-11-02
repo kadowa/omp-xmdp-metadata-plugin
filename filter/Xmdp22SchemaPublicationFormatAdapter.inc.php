@@ -168,12 +168,12 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		// Identifier(s)
 		// dc:identifier: xsi:type=urn:nbn|doi|hdl (1, mandatory)
 		// ddb:identifier: ddb:type=URL|URN|DOI|handle|VG-Wort-Pixel|URL_Frontdoor|URL_Publikation|Erstkat-ID|ISSN|other (many, optional)
-		$pubIdPlugins = PluginRegistry::loadCategory('pubIds', true);
-		if ( isset($pubIdPlugins) && array_key_exists('DOIPubIdPlugin', $pubIdPlugins) ) {
+		$pubIdPlugins = PluginRegistry::loadCategory('pubIds');
+		if ( isset($pubIdPlugins) && array_key_exists('DOIPubIdPlugin', $pubIdPlugins) && $pubIdPlugins['DOIPubIdPlugin']->getEnabled() == true) {
 			$doi = $pubIdPlugins['DOIPubIdPlugin']->getPubId($publicationFormat);
 		}
 		
-		if ( isset($pubIdPlugins) && array_key_exists('URNDNBPubIdPlugin', $pubIdPlugins) ) {
+		if ( isset($pubIdPlugins) && array_key_exists('URNDNBPubIdPlugin', $pubIdPlugins) && $pubIdPlugins['URNDNBPubIdPlugin']->getEnabled() == true) {
 			$urn_dnb = $pubIdPlugins['URNDNBPubIdPlugin']->getPubId($monograph);
 		}
 		
