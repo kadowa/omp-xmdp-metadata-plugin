@@ -175,10 +175,13 @@ class Xmdp22SchemaPublicationFormatAdapter extends MetadataDataObjectAdapter {
 		
 		if ( isset($pubIdPlugins) && array_key_exists('URNDNBPubIdPlugin', $pubIdPlugins) && $pubIdPlugins['URNDNBPubIdPlugin']->getEnabled() == true) {
 			$urn_dnb = $pubIdPlugins['URNDNBPubIdPlugin']->getPubId($monograph);
+			$namespaces = explode(':', $urn_dnb);
+			$numberOfNamespaces = min(sizeof($namespaces), 3);
+			$scheme = implode(":", array_slice($namespaces, 0, $numberOfNamespaces));
 		}
 		
 		if ( isset($urn_dnb) ) {
-			$description->addStatement('dc:identifier', $urn_dnb . ' [@xsi:type="urn:nbn"]');
+			$description->addStatement('dc:identifier', $urn_dnb . ' [@xsi:type="' . $scheme . '"]');
 			if ( isset($doi) ) {
 				$description->addStatement('ddb:identifier', $doi . ' [@ddb:type="DOI"]');
 			}
